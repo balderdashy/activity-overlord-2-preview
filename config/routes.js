@@ -32,9 +32,17 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': {
-    view: 'homepage'
-  }
+  // '/': {
+  //   view: 'homepage'
+  // }
+  // 
+
+  'get /': 'StaticController.serveSPA',
+
+  'get /user/new': 'UserController.new',
+
+  'post /user/create': 'UserController.create'
+
 
   /***************************************************************************
   *                                                                          *
