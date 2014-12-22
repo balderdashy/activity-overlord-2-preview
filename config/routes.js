@@ -41,7 +41,9 @@ module.exports.routes = {
 
   'get /user/new': 'UserController.new',
 
-  'post /user/create': 'UserController.create'
+  'post /user/create': 'UserController.create',
+
+  'get /auth/destroy': 'AuthController.destroy'
 
 
   /***************************************************************************

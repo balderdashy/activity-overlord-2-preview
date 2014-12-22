@@ -13,7 +13,7 @@ angular.module('activityApp').controller('appController',
   $scope.signOutUser = function() {
 
     // This is the equivalent of a GET request to the path /session/destroy
-    window.location.href = "/session/destroy";
+    window.location.href = "/auth/destroy";
 
   }
 
