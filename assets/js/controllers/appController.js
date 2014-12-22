@@ -6,7 +6,7 @@ angular.module('activityApp').controller('appController',
   $scope.userName = BOOTSTRAPPED_DATA.name;
   $scope.userId = BOOTSTRAPPED_DATA.id;
 
-  console.log("made it here");
+  // console.log("made it here");
 
   // Logs user out in terms of the back-end by calling /session/destroy which is routed to the session destroy 
   // action on the back-end.

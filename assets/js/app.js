@@ -76,19 +76,19 @@ angular.module('activityApp')
 
 		.when('/',
 			{
-				templateUrl: 'angular/views/home.html'
+				templateUrl: 'views/home.html'
 			})
 		.when('/user',
 			{
 				controller: 'userController',
-				templateUrl: 'angular/views/users.html'
+				templateUrl: 'views/users.html'
 			})
 		.when('/user/:userID',
 			{
 			    controller: 'profileController',
-				templateUrl: 'angular/views/profile.html'
+				templateUrl: 'views/profile.html'
 			})
-		.otherwise({redirectTo: 'angular/views/index.html'});
+		.otherwise({redirectTo: 'views/index.html'});
 		
 }]);
 
