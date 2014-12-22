@@ -60,6 +60,8 @@ module.exports = {
 
       }
 
+      var bcrypt = require('bcrypt');
+
       // Compare password from the form params to the encrypted password of the user found.
       bcrypt.compare(req.param('password'), user.encryptedPassword, function(err, valid) {
         if (err) return next(err);

@@ -6,7 +6,7 @@ angular.module('activityApp').controller('userController',
 
     $http.get(url).then(function(response) {
         $scope.users = response.data; 
-        console.log($scope.users);
+        console.log("These are the users: ", $scope.users);
       }, function (reason) {
           console.log('ERROR', reason);
       });

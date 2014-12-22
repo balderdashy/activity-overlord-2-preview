@@ -16,6 +16,4 @@ angular.module('activityApp').controller('profileController',
 
   $scope.getUser();
 
-
-
   }]);

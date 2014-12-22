@@ -56,6 +56,10 @@ margin-right: 2px;
  line-height: 3.5;
 }
 
+/* This changes the cursor to a pointer */
+.pointer {
+    cursor: pointer;
+}
 
 
 

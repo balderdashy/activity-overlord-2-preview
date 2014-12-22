@@ -11,7 +11,7 @@
           <span class="icon-bar"></span>
         </button>
         <!-- This is the brand on the left-hand side. -->
-        <a class="navbar-brand" href="/#"> activityOverlord</a>
+        <a class="navbar-brand" href="/"> activityOverlord</a>
       <!-- This is what is the above collapse button points to when the mark-up below is collapsed -->
       <div class="collapse navbar-collapse" ng-controller="navBarController">
         <!-- This is what "styles" the li's as navbar items -->
@@ -22,7 +22,7 @@
 
         <ul class="nav navbar-nav navbar-right">
         <li class="gravatarSm"><img ng-src="images/default.jpg" width="24" height="24"/></li>
-        <li class="activityOverlord active"><a ng-click="getProfile()"> {{userName}}</a></li>
+        <li class="activityOverlord active"><a ng-click="getProfile()" class="pointer"> {{userName}}</a></li>
         <!-- <li class="activityOverlord active"><a href="/{{id}}">{{userName}}</a></li> -->
         
           <!-- navbar-right pulls this element right -->

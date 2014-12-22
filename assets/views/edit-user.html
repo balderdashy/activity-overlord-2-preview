@@ -1,0 +1,39 @@
+<div class="alert alert-info toggle" ng-if="toggle">
+
+  {{error.data.err}}
+
+  <!-- <ul ng-repeat="err in error.data">
+
+  <li> {{err.ValidationError}} </li>
+
+  </ul> -->
+</div>
+
+<div>
+  <form ng-submit="editUser()" class="form-signin">
+    <h2 class="form-signin-heading">Edit a user</h2>
+
+    <div class="control-group">
+    <input type="text" class="form-control" placeholder="your name" name="name" ng-model="user.name">
+    </div>
+
+    <div class="control-group">
+    <input type="text" class="form-control" placeholder="your title" name="title" ng-model="user.title">
+    </div>
+    
+    <div class="control-group">
+    <input type="text" class="form-control" placeholder="email address" name="email" ng-model="user.email">
+    </div>
+
+    <div class="control-group">
+    <input type="password" class="form-control" placeholder="password" name="password" id="password" ng-model="user.password">
+    </div>
+
+    <div class="control-group">
+    <input type="password" class="form-control" placeholder="password confirmation" name="confirmation" ng-model="user.confirmation">
+    <br />
+    </div>
+
+    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Edit User"/>
+  </form>
+</div>

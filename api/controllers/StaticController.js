@@ -14,7 +14,7 @@ module.exports = {
       var name = req.session.User.name;
       var id = req.session.User.id;
 
-      res.view('angular/index', { layout: 'angular-layout', locals: { _name: name, isAuth: true, id: id}});
+      res.view('angular/index', { layout: 'angular-layout',  _name: name, isAuth: true, id: id });
 
     } else { 
 

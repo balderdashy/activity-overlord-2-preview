@@ -23,8 +23,11 @@
 					<td> {{user.email}} </td>
 					
 					<td> <img src="images/admin.png"></td>
-					<td><a href="/user/show/ user.id " class="btn btn-sm btn-primary">Show</a></td>
-					<td><a href="/user/edit/ user.id " class="btn btn-sm btn-warning">Edit</a></td>
+					<!-- <td><a href="/user/{{user.id}}" class="btn btn-sm btn-primary">Show</a></td> -->
+					<td><span ng-click="getProfile()" class="btn btn-sm btn-primary pointer">Show</span></td>
+					
+					<!--<td><a href="/user/edit/ user.id " class="btn btn-sm btn-warning">Edit</a></td>-->
+					<td><span ng-click="editUser()" class="btn btn-sm btn-primary pointer">Edit</span></td>
 
 					<td><form action="/user/destroy/1" method="POST">
 						<input type="hidden" name="_method" value="delete"/>

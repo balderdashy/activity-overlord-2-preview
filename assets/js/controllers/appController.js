@@ -23,14 +23,21 @@ angular.module('activityApp').controller('appController',
   $scope.getUserList = function () {
 
     $location.url('/user');
-    // $location.url('/yaya');
   }     
 
+  // Get a profile
   $scope.getProfile = function() {
 
     $location.url('/user/' + $scope.userId);
 
   }
+
+  // Edit a profile
+  $scope.editUser = function() {
+
+    $location.url('/edit-user/' + $scope.userId);
+
+  }  
         
   // $scope.getUser = function () {
   //     var url = '/user/' + $scope.userId;
