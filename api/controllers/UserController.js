@@ -9,7 +9,9 @@ module.exports = {
 
   // This loads the sign-up page --> new.ejs
   'new': function(req, res) {
-    res.view({ layout: 'public-layout'});
+    res.view({
+      layout: 'public-layout'
+    });
   },
 
 
@@ -22,9 +24,9 @@ module.exports = {
       email: req.param('email'),
       password: req.param('password'),
       confirmation: req.param('confirmation')
-    }
+    };
 
-    // Create a User with the params sent from 
+    // Create a User with the params sent from
     // the sign-up form --> new.ejs
     User.create(userObj, function userCreated(err, user) {
 
@@ -32,7 +34,7 @@ module.exports = {
         console.log(err);
         req.session.flash = {
           err: err
-        }
+        };
 
         // If error redirect back to sign-up page
         return res.redirect('/user/new');
@@ -48,15 +50,15 @@ module.exports = {
 
         //!!!!!Not sure how to handle this error??
 
-      // add the action attribute to the user object for the flash message.
-      user.action = " signed-up and logged-in."
+        // add the action attribute to the user object for the flash message.
+        user.action = ' signed-up and logged-in.';
 
-      // Let other subscribed sockets know that the user was created.
-      User.publishCreate(user);
+        // Let other subscribed sockets know that the user was created.
+        User.publishCreate(user);
 
         // After successfully creating the user
         // redirect to the show action
-        // From ep1-6: //res.json(user); 
+        // From ep1-6: //res.json(user);
 
         // res.redirect('/user/show/' + user.id);
 
@@ -64,6 +66,5 @@ module.exports = {
       });
     });
   }
-	
-};
 
+};

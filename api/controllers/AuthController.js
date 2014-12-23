@@ -17,7 +17,7 @@ module.exports = {
       var usernamePasswordRequiredError = [{
         name: 'usernamePasswordRequired',
         message: 'You must enter both a username and password.'
-      }]
+      }];
 
       // Remember that err is the object being passed down (a.k.a. flash.err), whose value is another object with
       // the key of usernamePasswordRequiredError
@@ -34,7 +34,7 @@ module.exports = {
       return;
     }
 
-    // Try to find the user by there email address. 
+    // Try to find the user by there email address.
     // findOneByEmail() is a dynamic finder in that it searches the model by a particular attribute.
     // User.findOneByEmail(req.param('email')).done(function(err, user) {
     User.findOneByEmail(req.param('email'), function foundUser(err, user) {
@@ -44,12 +44,12 @@ module.exports = {
       // If no user is found...
       if (!user) {
         var noAccountError = [{
-            name: 'noAccount',
-            message: 'The email address ' + req.param('email') + ' not found.'
-          }]
-          // req.session.flash = {
-          //     err: noAccountError
-          // }
+          name: 'noAccount',
+          message: 'The email address ' + req.param('email') + ' not found.'
+        }];
+        // req.session.flash = {
+        //     err: noAccountError
+        // }
 
         res.send(404, noAccountError);
         return;
@@ -69,12 +69,12 @@ module.exports = {
         // If the password from the form doesn't match the password from the database...
         if (!valid) {
           var usernamePasswordMismatchError = [{
-              name: 'usernamePasswordMismatch',
-              message: 'Invalid username and password combination.'
-            }]
-            // req.session.flash = {
-            //     err: usernamePasswordMismatchError
-            // }
+            name: 'usernamePasswordMismatch',
+            message: 'Invalid username and password combination.'
+          }];
+          // req.session.flash = {
+          //     err: usernamePasswordMismatchError
+          // }
           res.send(404, usernamePasswordMismatchError);
           return;
         }

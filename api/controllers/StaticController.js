@@ -9,20 +9,26 @@ module.exports = {
 
   serveSPA: function(req, res) {
 
-    if(req.session.authenticated) {
+    if (req.session.authenticated) {
 
       var name = req.session.User.name;
       var id = req.session.User.id;
 
-      res.view('angular/index', { layout: 'angular-layout',  _name: name, isAuth: true, id: id });
+      res.view('angular/index', {
+        layout: 'angular-layout',
+        _name: name,
+        isAuth: true,
+        id: id
+      });
 
-    } else { 
+    } else {
 
-      res.view('static/index', { layout: 'public-layout'});
-  
+      res.view('static/index', {
+        layout: 'public-layout'
+      });
+
     }
 
   }
-	
-};
 
+};

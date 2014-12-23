@@ -1,9 +1,9 @@
 /**
-* User.js
-*
-* @description :: TODO: You might write a short summary of how this model works and what it represents here.
-* @docs        :: http://sailsjs.org/#!documentation/models
-*/
+ * User.js
+ *
+ * @description :: TODO: You might write a short summary of how this model works and what it represents here.
+ * @docs        :: http://sailsjs.org/#!documentation/models
+ */
 
 module.exports = {
 
@@ -12,48 +12,50 @@ module.exports = {
     name: {
       type: 'string',
       required: true
-      },
+    },
 
-      title: {
-        type: 'string'
-      },
+    title: {
+      type: 'string'
+    },
 
-      email: {
-        type: 'string',
-        email: true,
-        required: true,
-        unique: true
-      },
+    email: {
+      type: 'string',
+      email: true,
+      required: true,
+      unique: true
+    },
 
-      encryptedPassword: {
-        type: 'string'
-      },
+    encryptedPassword: {
+      type: 'string'
+    },
 
-      online: {
-        type: 'boolean',
-        defaultsTo: false
-      },
+    online: {
+      type: 'boolean',
+      defaultsTo: false
+    },
 
-      admin: {
-        type: 'boolean',
-        defaultsTo: false
-      },
+    admin: {
+      type: 'boolean',
+      defaultsTo: false
+    },
 
-      toJSON: function() {
-        var obj = this.toObject();
-        delete obj.password;
-        delete obj.confirmation;
-        delete obj.encryptedPassword;
-        delete obj._csrf;
-        return obj;
-      },
+    toJSON: function() {
+      var obj = this.toObject();
+      delete obj.password;
+      delete obj.confirmation;
+      delete obj.encryptedPassword;
+      delete obj._csrf;
+      return obj;
+    },
   },
 
-  beforeCreate: function (values, next) {
+  beforeCreate: function(values, next) {
 
     // This checks to make sure the password and password confirmation match before creating record
     if (!values.password || values.password != values.confirmation) {
-      return next({err: ["Password doesn't match password confirmation."]});
+      return next({
+        err: ["Password doesn't match password confirmation."]
+      });
     }
 
     require('bcrypt').hash(values.password, 10, function passwordEncrypted(err, encryptedPassword) {
@@ -64,4 +66,3 @@ module.exports = {
     });
   }
 };
-
