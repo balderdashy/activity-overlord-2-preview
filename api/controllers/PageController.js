@@ -28,9 +28,10 @@ module.exports = {
       }
 
       return res.view('logged-in', {
-        loggedInUser: {
+        me: {
           id: user.id,
-          name: user.name
+          name: user.name,
+          isAdmin: !!user.admin
         }
       });
 
