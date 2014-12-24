@@ -39,19 +39,19 @@ module.exports.routes = {
   'PUT /login': 'UserController.login',
   '/logout': 'UserController.logout',
 
-  // List users
-  'GET /user': 'UserController.find',
-
   // Get my profile
   'GET /me': 'UserController.getMyProfile',
 
+  // List users
+  'GET /users': 'UserController.find',
+
   // Get user profile
-  'GET /user/:id': 'UserController.findOne',
+  'GET /users/:id': 'UserController.findOne',
 
   // Update a user's profile data
-  'PUT /user/:id': 'UserController.update',
+  'PUT /users/:id': 'UserController.update',
 
   // Destroy a user
-  'DELETE /user/:id': 'UserController.destroy'
+  'DELETE /users/:id': 'UserController.destroy'
 
 };

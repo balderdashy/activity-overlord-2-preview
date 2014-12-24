@@ -4,27 +4,27 @@ angular.module('ActivityOverlord').controller('AdminDashboardCtrl', ['$scope', '
   /////////////////////////////////////////////////////////////////////////////////
   // When HTML is rendered...
   /////////////////////////////////////////////////////////////////////////////////
-LOCATION = $location;
+
+  $scope.userList = {
+    loading: false,
+    errorMsg: '',
+    contents: []
+  };
 
 
-
-
-
-
-
-
-
-
-  // var url = '/user';
-  // $http.get(url).then(function(response) {
-    //   $scope.users = response.data;
-    //   console.log("These are the users: ", $scope.users);
-    // }, function(reason) {
-    //   console.log('ERROR', reason);
-    // });
-
-
-  // ...
+  // Fetch list of users from the server.
+  $scope.userList.loading = true;
+  $scope.userList.errorMsg = '';
+  $http.get('/users').then(function(res) {
+    $scope.userList.contents = res.data;
+  })
+  .catch(function(res) {
+    // Display generic error, since there are no expected errors.
+    $scope.userList.errorMsg = 'An unexpected error occurred: '+(res.data||res.status);
+  })
+  .finally(function (){
+    $scope.userList.loading = false;
+  });
 
 
 
@@ -34,19 +34,5 @@ LOCATION = $location;
   /////////////////////////////////////////////////////////////////////////////////
 
   // ...
-
-
-  // $scope.getUsers = function() {
-  //   var url = '/user';
-
-  //   $http.get(url).then(function(response) {
-  //     $scope.users = response.data;
-  //     console.log("These are the users: ", $scope.users);
-  //   }, function(reason) {
-  //     console.log('ERROR', reason);
-  //   });
-  // };
-
-  // $scope.getUsers();
 
 }]);

@@ -93,9 +93,7 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
     })
     .catch(function (res) {
 
-      console.log('\n\nERROR RESP!',res);
-
-      // Handle known error type.
+      // Handle known error type(s).
       var emailAddressAlreadyInUse = !res.data && res.data.error !== 'E_VALIDATION';
       if (emailAddressAlreadyInUse) {
         // TODO
