@@ -22,14 +22,36 @@
 
 module.exports.routes = {
 
+  ////////////////////////////////////////////////////////////
   // Dynamic HTML webpages
-  'get /': 'PageController.showHomePage',
+  ////////////////////////////////////////////////////////////
+  'GET /': 'PageController.showHomePage',
 
+
+
+
+  ////////////////////////////////////////////////////////////
   // JSON API
+  ////////////////////////////////////////////////////////////
+
+  // User enrollment + authentication
   'POST /signup': 'UserController.signup',
   'PUT /login': 'UserController.login',
   '/logout': 'UserController.logout',
-  'post /user/create': 'UserController.create',
-  'get /auth/destroy': 'AuthController.destroy'
+
+  // List users
+  'GET /user': 'UserController.find',
+
+  // Get my profile
+  'GET /me': 'UserController.getMyProfile',
+
+  // Get user profile
+  'GET /user/:id': 'UserController.findOne',
+
+  // Update a user's profile data
+  'PUT /user/:id': 'UserController.update',
+
+  // Destroy a user
+  'DELETE /user/:id': 'UserController.destroy'
 
 };

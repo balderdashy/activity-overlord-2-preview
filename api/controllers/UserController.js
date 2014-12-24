@@ -121,11 +121,18 @@ module.exports = {
         req.session.me = newUser.id;
 
         // Let other subscribed sockets know that the user was created.
-        User.publishCreate(newUser);
+        User.publishCreate({
+          id: newUser.id,
+          name: newUser.name,
+          title: newUser.title,
+          email: newUser.email
+        });
 
-        return res.ok({
+        // Send back the id of the new user
+        return res.json({
           id: newUser.id
         });
+
       });
     });
   }
