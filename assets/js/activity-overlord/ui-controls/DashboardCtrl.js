@@ -32,7 +32,9 @@ SCOPE=$scope;
 
 
   // "Watch" the user model and "subscribe" to each user record.
-  io.socket.get('/users/watch', function (unused, jwr) {
+  io.socket.get('/users/watch', {
+    _csrf: window.SAILS_LOCALS._csrf
+  }, function (unused, jwr) {
     if (jwr.error){
       console.error('Error subscribing to user events:', jwr.error);
       return;
@@ -42,7 +44,9 @@ SCOPE=$scope;
   });
 
   // Let Sails know we've come online.
-  io.socket.put('/me/online', function (unused,jwr){
+  io.socket.put('/me/online', {
+    _csrf: window.SAILS_LOCALS._csrf
+  }, function (unused,jwr){
     if (jwr.error){
       console.error('Error announcing new socket connection to Sails:',jwr);
       return;
