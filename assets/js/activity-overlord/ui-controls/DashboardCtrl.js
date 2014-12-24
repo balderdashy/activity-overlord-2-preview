@@ -47,6 +47,8 @@ SCOPE=$scope;
       console.error('Error announcing new socket connection to Sails:',jwr);
       return;
     }
+
+    // OK! Now Sails knows we're online.
   });
 
 
@@ -84,6 +86,11 @@ SCOPE=$scope;
     }
 
     if (event.verb === 'destroyed') {
+      _.remove($scope.userList.contents, {id: event.id});
+
+      // Because `io.socket.on` isn't `io.socket.$on` or something
+      // we have to do this to render our changes into the DOM.
+      $scope.$apply();
       return;
     }
 
