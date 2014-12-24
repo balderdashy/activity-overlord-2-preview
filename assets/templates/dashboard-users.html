@@ -41,13 +41,20 @@
       <th></th>
     </tr>
     <tr ng-repeat="user in userList.contents">
-      <td><img src="images/icon-online.png"></td>
+
+      <td>
+        <img ng-show="user.online" src="images/icon-online.png">
+      </td>
       <td> {{user.id}} </td>
       <td> {{user.name}} </td>
       <td> {{user.title}} </td>
       <td> {{user.email}} </td>
 
-      <td> <img src="images/admin.png"></td>
+      <td>
+        <img ng-show="user.admin" src="images/admin.png">
+        <img ng-show="!user.admin" src="images/pawn.png">
+      </td>
+
       <td>
         <!-- Don't display the "show" button if this user is YOU (the visitor) -->
         <a ng-hide="me.id == user.id" href="#/users/{{user.id}}" class="btn btn-sm btn-primary">Show</a>
@@ -64,7 +71,12 @@
 
       <td>
         <!-- Don't show delete button if this user is YOU (the visitor) -->
-        <a ng-hide="me.id == user.id" ng-click="deleteUser(user.id)" class="btn btn-sm btn-danger">Delete</a>
+        <a ng-disabled="user.deleting" ng-hide="me.id == user.id" ng-click="deleteUser(user.id)" class="btn btn-sm btn-danger">
+          <span ng-show="!user.deleting">Delete</span>
+          <span class="overlord-loading-spinner fa fa-spinner" ng-show="user.deleting" ></span>
+          <span ng-show="user.deleting">Deleting...</span>
+        </a>
+
       </td>
       <!-- <td>
         <form action="/user/destroy/1" method="POST">

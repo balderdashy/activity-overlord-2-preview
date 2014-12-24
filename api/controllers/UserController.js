@@ -8,10 +8,54 @@
 module.exports = {
 
 
+  /**
+   * Update your own profile ("you" being the currently-logged in user)
+   */
+  updateMyProfile: function (req, res) {
+    (function (cb){
+      var setAttrVals = {};
 
+      if (req.param('name')) {
+        setAttrVals.name = req.param('name');
+      }
+      if (req.param('title')) {
+        setAttrVals.title = req.param('title');
+      }
+      if (req.param('email')) {
+        setAttrVals.email = req.param('email');
+      }
+
+      // Encrypt password if necessary
+      if (!req.param('password')) {
+        return cb(null, setAttrVals);
+      }
+      require('bcrypt').hash(req.param('password'), 10, function passwordEncrypted(err, encryptedPassword) {
+        if (err) return cb(err);
+        setAttrVals.encryptedPassword = encryptedPassword;
+        return cb(null, setAttrVals);
+      });
+    })(function (err, setAttrVals){
+      if (err) return res.negotiate(err);
+
+      // TODO: realtime bit
+
+      User.update(req.session.me, setAttrVals).exec(function (err){
+        if (err) return res.negotiate(err);
+        return res.ok();
+      });
+    });
+  },
+
+
+
+  /**
+   * Update any user.
+   */
   update: function (req, res) {
 
-    if (!req.param('id')) return res.badRequest('`id` of user to edit is required');
+    if (!req.param('id')) {
+      return res.badRequest('`id` of user to edit is required');
+    }
 
     (function (cb){
       var setAttrVals = {};
@@ -24,6 +68,12 @@ module.exports = {
       }
       if (req.param('email')) {
         setAttrVals.email = req.param('email');
+      }
+
+      // In this case, we use _.isUndefined (which is pretty much just `typeof X==='undefined'`)
+      // because the parameter could be sent as `false`, which we **do** care about.
+      if ( !_.isUndefined(req.param('admin')) ) {
+        setAttrVals.admin = req.param('admin');
       }
 
       // Encrypt password if necessary
@@ -165,7 +215,8 @@ module.exports = {
           id: newUser.id,
           name: newUser.name,
           title: newUser.title,
-          email: newUser.email
+          email: newUser.email,
+          online: true
         });
 
         // Send back the id of the new user

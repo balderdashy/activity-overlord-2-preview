@@ -20,6 +20,8 @@
 module.exports.policies = {
 
   UserController: {
-    logout: ['isLoggedIn']
+    logout: ['isLoggedIn'],
+    update: ['isAdmin'],
+    updateMyProfile: ['isLoggedIn']
   }
 };

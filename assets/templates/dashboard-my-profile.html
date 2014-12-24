@@ -35,7 +35,12 @@
           <label>Your email address</label>
           <input type="text" class="form-control" placeholder="jon@winterfell.net" name="email" ng-model="userProfile.properties.email">
         </div>
-        <input type="submit" class="btn btn-lg btn-primary btn-block" value="Save"/>
+
+        <button type="submit" class="btn btn-lg btn-primary btn-block">
+          <span ng-show="userProfile.saving" class="overlord-loading-spinner fa fa-spinner"></span>
+          <span ng-show="userProfile.saving">Saving...</span>
+          <span ng-hide="userProfile.saving" class="btn-text">Save</span>
+        </button>
       </form>
     </div>
   </div>

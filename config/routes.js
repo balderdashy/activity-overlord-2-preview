@@ -42,6 +42,9 @@ module.exports.routes = {
   // Get my profile
   'GET /me': 'UserController.getMyProfile',
 
+  // Update my profile
+  'PUT /me': 'UserController.updateMyProfile',
+
   // List users
   'GET /users': 'UserController.find',
 

@@ -20,45 +20,34 @@
       <h4>Edit Profile</h4>
     </div>
     <div class="panel-body">
-      <div class="control-group form-group col-md-12">
-        <label>Your full name</label>
-        <input type="text" class="form-control" placeholder="e.g. Jon Snow" name="name" ng-model="signupForm.name">
-      </div>
-
-      <div class="control-group form-group col-md-12">
-        <label>Your title</label>
-        <input type="text" class="form-control" placeholder="e.g. Lord Commander, Night's Watch" name="title" ng-model="signupForm.title">
-      </div>
-
-      <div class="control-group form-group col-md-12">
-        <label>Your email address</label>
-        <input type="text" class="form-control" placeholder="jon@winterfell.net" name="email" ng-model="signupForm.email">
-      </div>
-    </div>
-    <button type="submit" class="btn btn-lg btn-primary btn-block">Save</button>
-  </div>
-</div>
-
-
-<div class="col-md-6">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4>Change Password</h4>
-    </div>
-    <div class="panel-body">
-      <form>
+      <form ng-submit="editUser(userProfile.properties.id)">
         <div class="control-group form-group col-md-12">
-          <label>Choose a password</label>
-          <input type="password" class="form-control" placeholder="at least 6 characters" name="password" ng-model="signupForm.password" id="password">
+          <label>Full name</label>
+          <input type="text" class="form-control" placeholder="e.g. Jon Snow" ng-model="userProfile.properties.name">
         </div>
 
         <div class="control-group form-group col-md-12">
-          <label>Re-enter your password</label>
-          <input type="password" class="form-control" placeholder="one more time" name="confirmation" ng-model="signupForm.confirmPassword">
+          <label>Title</label>
+          <input type="text" class="form-control" placeholder="e.g. Lord Commander, Night's Watch" ng-model="userProfile.properties.title">
         </div>
 
-        <button type="submit" class="btn btn-lg btn-primary btn-block">Save</button>
+        <div class="control-group form-group col-md-12">
+          <label>Email address</label>
+          <input type="text" class="form-control" placeholder="jon@winterfell.net" ng-model="userProfile.properties.email">
+        </div>
+
+        <div class="control-group form-group col-md-12">
+          <label>Administrator?</label>
+          <input type="checkbox" class="form-control" ng-model="userProfile.properties.admin">
+        </div>
+
+        <button type="submit" class="btn btn-lg btn-primary btn-block">
+          <span ng-show="userProfile.saving" class="overlord-loading-spinner fa fa-spinner"></span>
+          <span ng-show="userProfile.saving">Saving...</span>
+          <span ng-hide="userProfile.saving" class="btn-text">Save</span>
+        </button>
       </form>
     </div>
   </div>
 </div>
+

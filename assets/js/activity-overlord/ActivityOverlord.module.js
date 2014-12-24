@@ -39,7 +39,7 @@ angular.module('ActivityOverlord').config(['$routeProvider', function($routeProv
 
   // #/users/:id
   .when('/users/:id', {
-    templateUrl: 'templates/dashboard-profile.html',
+    templateUrl: 'templates/dashboard-show-user.html',
     controller: ['$scope', '$location', '$routeParams', '$http', function($scope, $location, $routeParams, $http) {
       // Don't allow non-admins to access #/users/:id.
       if (!$scope.me.isAdmin) {
@@ -84,6 +84,10 @@ angular.module('ActivityOverlord').config(['$routeProvider', function($routeProv
       $http.get('/users/'+$routeParams.id)
       .then(function onSuccess(res){
         angular.extend($scope.userProfile.properties, res.data);
+
+        // THIS WEIRDNESS IS HERE AS A HACK TO FIX AN ISSUE w/ SAILS-DISK!
+        // (save reference to original email)
+        $scope.userProfile.properties._origEmail = $scope.userProfile.properties.email;
       })
       .catch(function onError(res){
         $scope.userProfile.errorMsg = res.data||res.status;
@@ -107,21 +111,14 @@ angular.module('ActivityOverlord').config(['$routeProvider', function($routeProv
       // (save reference to original email)
       $scope.userProfile.properties._origEmail = $scope.me.email;
 
-      // // Lookup user with the specified id from the server
-      // $scope.userProfile.loading = false;
-      // $scope.userProfile.errorMsg = '';
-      // $http.get('/users/'+$scope.me.id)
-      // .then(function onSuccess(res){
-      //   $scope.userProfile.properties = res.data;
-      // })
-      // .catch(function onError(res){
-      //   $scope.userProfile.errorMsg = res.data||res.status;
-      // })
-      // .finally(function eitherWay(){
-      //   $scope.userProfile.loading = false;
-      // });
-
     }]
+  })
+
+
+
+  // #/stuff
+  .when('/stuff', {
+    templateUrl: 'templates/dashboard-example-page.html'
   })
 
 

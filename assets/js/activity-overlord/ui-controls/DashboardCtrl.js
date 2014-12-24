@@ -2,17 +2,17 @@ angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http
 
 
   /////////////////////////////////////////////////////////////////////////////////
-  // When HTML is rendered...
+  // When HTML is rendered... (i.e. when the page loads)
   /////////////////////////////////////////////////////////////////////////////////
 
-  // Setup object to represent user profile data
+  // Set up initial objects
+  // (kind of like our schema for the page)
   $scope.userProfile = {
     properties: {},
     errorMsg: '',
     saving: false,
     loading: false
   };
-
 
   $scope.userList = {
     loading: false,
@@ -29,6 +29,7 @@ angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http
   // Pull representation of the current visitor from data bootstrapped into the
   // EJS view from ther server (i.e. `SAILS_LOCALS`)
   $scope.me = window.SAILS_LOCALS.me;
+
 
   // Send request to Sails to fetch list of users.
   $scope.userList.loading = true;
@@ -54,21 +55,54 @@ angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http
 
 
   $scope.editMyProfile = function (){
-    // Call out to `editUser`, passing in the current visitor's user id
-    $scope.editUser($scope.me.id);
+
+    // Set loading ("saving") state
+    $scope.userProfile.saving = true;
+    $scope.userProfile.errorMsg = '';
+
+    // Send request to Sails to delete the specified user.
+    return $http.put('/me', {
+      name: $scope.userProfile.properties.name,
+      title: $scope.userProfile.properties.title,
+      email: (function (){
+        // THIS WEIRDNESS IS HERE AS A HACK TO FIX AN ISSUE w/ SAILS-DISK!
+        if ($scope.userProfile.properties.email === $scope.userProfile.properties._origEmail) {
+          return undefined;
+        }
+        return $scope.userProfile.properties.email;
+      })(),
+      admin: $scope.userProfile.properties.admin
+    })
+    .then(function onSuccess(sailsResponse){
+      // Everything is OK.
+    })
+    .catch(function onError(sailsResponse){
+
+      // Handle known error type(s).
+      var emailAddressAlreadyInUse = !sailsResponse.data && sailsResponse.data.error !== 'E_VALIDATION';
+      if (emailAddressAlreadyInUse) {
+        $scope.userProfile.errorMsg = 'Email address already in use.';
+        return;
+      }
+
+      // Otherwise, display generic error if the error is unrecognized.
+      $scope.userProfile.errorMsg = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
+    })
+    .finally(function eitherWay(){
+      $scope.userProfile.saving = false;
+    });
   };
 
 
   $scope.changeMyPassword = function (){
     // TODO: verify that passwords match (client-side)
 
-
     // Set loading ("saving") state
     $scope.changePasswordForm.saving = true;
     $scope.changePasswordForm.errorMsg = '';
 
     // Send request to Sails to delete the specified user.
-    return $http.put('/users/'+$scope.me.id, {
+    return $http.put('/me', {
       password: $scope.changePasswordForm.properties.password
     })
     .then(function onSuccess(sailsResponse){
@@ -97,14 +131,14 @@ angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http
     return $http.put('/users/'+userId, {
       name: $scope.userProfile.properties.name,
       title: $scope.userProfile.properties.title,
-
       email: (function (){
         // THIS WEIRDNESS IS HERE AS A HACK TO FIX AN ISSUE w/ SAILS-DISK!
         if ($scope.userProfile.properties.email === $scope.userProfile.properties._origEmail) {
           return undefined;
         }
         return $scope.userProfile.properties.email;
-      })()
+      })(),
+      admin: $scope.userProfile.properties.admin
     })
     .then(function onSuccess(sailsResponse){
       // Everything is OK.
