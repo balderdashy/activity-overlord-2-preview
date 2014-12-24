@@ -39,9 +39,6 @@ module.exports.routes = {
   'PUT /login': 'UserController.login',
   '/logout': 'UserController.logout',
 
-  // Get my profile
-  'GET /me': 'UserController.getMyProfile',
-
   // Update my profile
   'PUT /me': 'UserController.updateMyProfile',
 
