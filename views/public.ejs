@@ -14,7 +14,7 @@
 
     <!--Added this so the client has access to the csrf tag and it's grabbed first service side on every page -->
     <script type="text/javascript">
-        window.overlord = { _csrf: "<%= _csrf %>" };
+    window.SAILS_LOCALS = { _csrf: "<%= _csrf %>" };
     </script>
 
   </head>
