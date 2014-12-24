@@ -39,6 +39,9 @@ module.exports.routes = {
   'PUT /login': 'UserController.login',
   '/logout': 'UserController.logout',
 
+  // Flag self as online
+  'PUT /me/online': 'UserController.comeOnline',
+
   // Update my profile
   'PUT /me': 'UserController.updateMyProfile',
 

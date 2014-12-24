@@ -27,7 +27,7 @@ angular.module('ActivityOverlord').config(['$routeProvider', function($routeProv
   .when('/users', {
     templateUrl: 'templates/dashboard-users.html',
     // Don't allow non-admins to access #/users.
-    controller: ['$scope', '$location', function($scope, $location) {
+    controller: ['$scope', '$location', '$http', function($scope, $location, $http) {
       if (!$scope.me.isAdmin) {
         $location.path('/');
         $location.replace();

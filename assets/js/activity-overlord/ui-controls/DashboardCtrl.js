@@ -1,5 +1,5 @@
 angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
-
+SCOPE=$scope;
 
   /////////////////////////////////////////////////////////////////////////////////
   // When HTML is rendered... (i.e. when the page loads)
@@ -41,6 +41,46 @@ angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http
     // OK! Now we're subscribed to all of the user records in the database.
   });
 
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////
+  // Socket (server-sent) events:
+  /////////////////////////////////////////////////////////////////////////////////
+
+  // When a "user" event is emitted from the server
+  // (i.e. a controller or blueprint action calls `User.publishUpdate()`,
+  //  `User.publishCreate`, etc.)
+  io.socket.on('user', function (event){
+    console.log(event);
+
+    if (event.verb === 'updated') {
+      var foundUser = _.find($scope.userList.contents, {id: event.id});
+      if (foundUser) {
+        _.extend(foundUser, event.data);
+      }
+
+      // Because `io.socket.on` isn't `io.socket.$on` or something
+      // we have to do this to render our changes into the DOM.
+      $scope.$apply();
+      return;
+    }
+
+    if (event.verb === 'created') {
+      $scope.userList.contents.push(event.data);
+
+      // Because `io.socket.on` isn't `io.socket.$on` or something
+      // we have to do this to render our changes into the DOM.
+      $scope.$apply();
+      return;
+    }
+
+    if (event.verb === 'destroyed') {
+      return;
+    }
+
+    throw new Error('Unexpected/unknown socket event: "'+event.verb+'" received from Sails.');
+  });
 
 
 

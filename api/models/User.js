@@ -38,7 +38,16 @@ module.exports = {
     },
 
     // Whether or not the user is currently online
+    // (i.e. has a browser tab or mobile app open on Activity Overlord)
     online: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+
+    // Whether or not the user has a session
+    // (i.e. they logged in recently enough without logging out.
+    // Note that this never expires-- so it is just an approximation)
+    hasSession: {
       type: 'boolean',
       defaultsTo: false
     },

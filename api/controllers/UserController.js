@@ -8,6 +8,24 @@
 module.exports = {
 
 
+  comeOnline: function (req, res) {
+
+    // Flag this user as online.
+    User.update(req.session.me, {
+      online: true
+    }).exec(function (err){
+      if (err) return res.negotiate(err);
+
+      // Tell anyone who is allowed to hear about it that this user is online.
+      User.publishUpdate(req.session.me, {
+        online: true
+      });
+
+      return res.ok();
+    });
+  },
+
+
   /**
    * This action is mainly here to demonstrate exactly what the
    * pubsub/sockets part of the `find` blueprint does.
@@ -23,8 +41,8 @@ module.exports = {
 
       // "Subscribe" to each User record to hear about
       // `publishUpdate`'s and `publishDestroy`'s
-      _.each(users, function (users) {
-        User.subscribe(req,userId);
+      _.each(users, function (user) {
+        User.subscribe(req, user.id);
       });
 
       return res.ok();
@@ -58,13 +76,20 @@ module.exports = {
         setAttrVals.encryptedPassword = encryptedPassword;
         return cb(null, setAttrVals);
       });
-    })(function (err, setAttrVals){
+    })(function (err, attributeValsToSet){
       if (err) return res.negotiate(err);
 
-      // TODO: realtime bit
-
-      User.update(req.session.me, setAttrVals).exec(function (err){
+      User.update(req.session.me, attributeValsToSet).exec(function (err){
         if (err) return res.negotiate(err);
+
+        // Let all connected sockets who were allowed to subscribe to this user
+        // record know that there has been a change.
+        User.publishUpdate(req.session.me, {
+          name: attributeValsToSet.name,
+          email: attributeValsToSet.email,
+          title: attributeValsToSet.title
+        });
+
         return res.ok();
       });
     });
@@ -109,13 +134,21 @@ module.exports = {
         setAttrVals.encryptedPassword = encryptedPassword;
         return cb(null, setAttrVals);
       });
-    })(function (err, setAttrVals){
+    })(function (err, attributeValsToSet){
       if (err) return res.negotiate(err);
 
-      // TODO: realtime bit
-
-      User.update(req.param('id'), setAttrVals).exec(function (err){
+      User.update(req.param('id'), attributeValsToSet).exec(function (err){
         if (err) return res.negotiate(err);
+
+        // Let all connected sockets who were allowed to subscribe to this user
+        // record know that there has been a change.
+        User.publishUpdate(req.param('id'), {
+          name: attributeValsToSet.name,
+          email: attributeValsToSet.email,
+          title: attributeValsToSet.title,
+          admin: attributeValsToSet.admin
+        });
+
         return res.ok();
       });
     });
@@ -153,11 +186,25 @@ module.exports = {
           return res.notFound();
         }
 
-        // Store user id in the user session
-        req.session.me = user.id;
+        // The user is "logging in" (e.g. establishing a session)
+        // so change the `hasSession` attribute to true.
+        User.update(user.id, {
+          hasSession: true
+        }, function(err) {
+          if (err) return res.negotiate(err);
 
-        // All done- let the client know that everything worked.
-        return res.ok();
+          // Inform other sockets (e.g. connected sockets that are subscribed)
+          // that this user has logged in.
+          User.publishUpdate(user.id, {
+            hasSession: true
+          });
+
+          // Store user id in the user session
+          req.session.me = user.id;
+
+          // All done- let the client know that everything worked.
+          return res.ok();
+        });
 
       });// </bcrypt.compare>
 
@@ -179,21 +226,17 @@ module.exports = {
       }
 
       // The user is "logging out" (e.g. destroying the session)
-      // so change the online attribute to false.
+      // so change the `hasSession` attribute to false.
       User.update(user.id, {
-        online: false
+        hasSession: false
       }, function(err) {
         if (err) return res.negotiate(err);
 
-        // TODO
         // Inform other sockets (e.g. connected sockets that are subscribed)
-        // that the session for this user has ended.
-        // User.publishUpdate(userId, {
-        //     loggedIn: false,
-        //     id: userId,
-        //     name: user.name,
-        //     action: ' has logged out.'
-        // });
+        // that this user has logged out.
+        User.publishUpdate(user.id, {
+          hasSession: false
+        });
 
         // Wipe out the session (log out)
         req.session.me = null;

@@ -120,10 +120,26 @@ module.exports.sockets = {
   * disconnects                                                              *
   *                                                                          *
   ***************************************************************************/
-  // afterDisconnect: function(session, socket, cb) {
-  //   // By default: do nothing.
-  //   return cb();
-  // },
+  afterDisconnect: function(session, socket, cb) {
+
+    console.log('AFTERDISCONNECT  session:',session);
+    // If the user wasn't logged in, we don't care.
+    if (!session.me) return cb();
+
+    // Flag this user as offline.
+    User.update(session.me, {
+      online: false
+    }).exec(function (err){
+      if (err) return cb(err);
+
+      // Tell anyone who is allowed to hear about it that this user is offline.
+      User.publishUpdate(session.me, {
+        online: false
+      });
+
+      return cb();
+    });
+  },
 
 
 

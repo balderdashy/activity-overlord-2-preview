@@ -23,6 +23,7 @@ module.exports.policies = {
 
     logout: ['isLoggedIn'],
     updateMyProfile: ['isLoggedIn'],
+    comeOnline: ['isLoggedIn'],
     watchAndSubscribeToAll: ['isLoggedIn'],
 
     find: ['isAdmin'],
