@@ -84,10 +84,6 @@ angular.module('ActivityOverlord').config(['$routeProvider', function($routeProv
       $http.get('/users/'+$routeParams.id)
       .then(function onSuccess(res){
         angular.extend($scope.userProfile.properties, res.data);
-
-        // THIS WEIRDNESS IS HERE AS A HACK TO FIX AN ISSUE w/ SAILS-DISK!
-        // (save reference to original email)
-        $scope.userProfile.properties._origEmail = $scope.userProfile.properties.email;
       })
       .catch(function onError(res){
         $scope.userProfile.errorMsg = res.data||res.status;
@@ -106,10 +102,6 @@ angular.module('ActivityOverlord').config(['$routeProvider', function($routeProv
 
       // Pass `$scope.me` in to `$scope.userProfile`
       angular.extend($scope.userProfile.properties, $scope.me);
-
-      // THIS WEIRDNESS IS HERE AS A HACK TO FIX AN ISSUE w/ SAILS-DISK!
-      // (save reference to original email)
-      $scope.userProfile.properties._origEmail = $scope.me.email;
 
     }]
   })

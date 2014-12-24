@@ -64,13 +64,7 @@ angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http
     return $http.put('/me', {
       name: $scope.userProfile.properties.name,
       title: $scope.userProfile.properties.title,
-      email: (function (){
-        // THIS WEIRDNESS IS HERE AS A HACK TO FIX AN ISSUE w/ SAILS-DISK!
-        if ($scope.userProfile.properties.email === $scope.userProfile.properties._origEmail) {
-          return undefined;
-        }
-        return $scope.userProfile.properties.email;
-      })(),
+      email: $scope.userProfile.properties.email,
       admin: $scope.userProfile.properties.admin
     })
     .then(function onSuccess(sailsResponse){
@@ -131,13 +125,7 @@ angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http
     return $http.put('/users/'+userId, {
       name: $scope.userProfile.properties.name,
       title: $scope.userProfile.properties.title,
-      email: (function (){
-        // THIS WEIRDNESS IS HERE AS A HACK TO FIX AN ISSUE w/ SAILS-DISK!
-        if ($scope.userProfile.properties.email === $scope.userProfile.properties._origEmail) {
-          return undefined;
-        }
-        return $scope.userProfile.properties.email;
-      })(),
+      email: $scope.userProfile.properties.email,
       admin: $scope.userProfile.properties.admin
     })
     .then(function onSuccess(sailsResponse){
