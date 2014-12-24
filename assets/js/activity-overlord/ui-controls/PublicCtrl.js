@@ -38,25 +38,25 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
       email: $scope.loginForm.email,
       password: $scope.loginForm.password
     })
-    .then(function (){
+    .then(function onSuccess (){
       // Refresh the page now that we've been logged in.
       window.location = '/';
     })
-    .catch(function (res) {
+    .catch(function onError(sailsResponse) {
 
       // Handle known error type(s).
 
       // Invalid username / password combination.
-      if (res.status === 404) {
+      if (sailsResponse.status === 404) {
         $scope.loginForm.topLevelErrorMessage = 'Invalid email/password combination.';
         return;
       }
 
       // Otherwise, display generic error if the error is unrecognized.
-      $scope.loginForm.topLevelErrorMessage = 'An unexpected error occurred: '+(res.data||res.status);
+      $scope.loginForm.topLevelErrorMessage = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
 
     })
-    .finally(function (){
+    .finally(function eitherWay(){
       $scope.loginForm.loading = false;
     });
   };
@@ -87,24 +87,24 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
       email: $scope.signupForm.email,
       password: $scope.signupForm.password
     })
-    .then(function (){
+    .then(function onSuccess (){
       // Refresh the page now that we've been logged in.
       window.location = '/';
     })
-    .catch(function (res) {
+    .catch(function onError(sailsResponse) {
 
       // Handle known error type(s).
-      var emailAddressAlreadyInUse = !res.data && res.data.error !== 'E_VALIDATION';
+      var emailAddressAlreadyInUse = !sailsResponse.data && sailsResponse.data.error !== 'E_VALIDATION';
       if (emailAddressAlreadyInUse) {
         // TODO
         return;
       }
 
       // Otherwise, display generic error if the error is unrecognized.
-      $scope.signupForm.topLevelErrorMessage = 'An unexpected error occurred: '+(res.data||res.status);
+      $scope.signupForm.topLevelErrorMessage = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
 
     })
-    .finally(function (){
+    .finally(function eitherWay(){
       $scope.signupForm.loading = false;
     });
   };

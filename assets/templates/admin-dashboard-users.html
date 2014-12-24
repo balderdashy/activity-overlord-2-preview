@@ -1,7 +1,34 @@
 <div class="panel panel-default">
-  <!-- Default panel contents -->
-  <div class="panel-heading"><h3>User Administration</h3></div>
-  <table class='table'>
+
+  <div class="panel-heading">
+    <h3>User Administration</h3>
+  </div>
+
+  <!-- Error state -->
+  <div ng-show="userList.errorMsg">
+    <h5>Oops!</h5>
+    <p>Looks like an error occurred.  Please try again later.</p>
+    <code>
+      {{errorMsg}}
+    </code>
+  </div>
+
+  <!-- Loading state -->
+  <div ng-show="userList.loading">
+    <span class="overlord-loading-spinner fa fa-spinner"></span>
+    <span>Loading users...</span>
+  </div>
+
+  <!-- Empty state -->
+  <div ng-show="userList.contents.length === 0">
+    <!--
+    Note that this empty state will never actually matter because there
+    will always be at least one user (the currently-logged-in admin).
+    -->
+    <span>No users yet.</span>
+  </div>
+
+  <table class="table" ng-show="!userList.loading && userList.contents.length > 0">
     <tr>
       <th></th>
       <th>ID</th>
@@ -13,7 +40,7 @@
       <th></th>
       <th></th>
     </tr>
-    <tr ng-repeat="user in users">
+    <tr ng-repeat="user in userList.contents">
       <td><img src="images/icon-online.png"></td>
       <td> {{user.id}} </td>
       <td> {{user.name}} </td>
@@ -21,16 +48,20 @@
       <td> {{user.email}} </td>
 
       <td> <img src="images/admin.png"></td>
-      <!-- <td><a href="/user/{{user.id}}" class="btn btn-sm btn-primary">Show</a></td> -->
-      <td><span ng-click="getProfile()" class="btn btn-sm btn-primary pointer">Show</span></td>
+      <td><a href="#/users/{{user.id}}" class="btn btn-sm btn-primary">Show</a></td>
+      <!-- <td><span ng-click="getProfile()" class="btn btn-sm btn-primary pointer">Show</span></td> -->
 
-      <!--<td><a href="/user/edit/ user.id " class="btn btn-sm btn-warning">Edit</a></td>-->
-      <td><span ng-click="editUser()" class="btn btn-sm btn-primary pointer">Edit</span></td>
-      <td><form action="/user/destroy/1" method="POST">
-        <input type="hidden" name="_method" value="delete"/>
-        <input type="submit" class="btn btn-sm btn-danger" value="Delete"/>
-        <input type="hidden" name="_csrf" value="_csrf"  />
-      </form></td>
+      <td><a href="#/users/{{user.id}}/edit" class="btn btn-sm btn-warning">Edit</a></td>
+      <!-- <td><span ng-click="editUser()" class="btn btn-sm btn-primary pointer">Edit</span></td> -->
+
+      <td><a ng-click="deleteUser(user.id)" class="btn btn-sm btn-danger">Delete</a></td>
+      <!-- <td>
+        <form action="/user/destroy/1" method="POST">
+          <input type="hidden" name="_method" value="delete"/>
+          <input type="submit" class="btn btn-sm btn-danger" value="Delete"/>
+          <input type="hidden" name="_csrf" value="_csrf"  />
+        </form>
+      </td> -->
     </tr>
 
   </table>

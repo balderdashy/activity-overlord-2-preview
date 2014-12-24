@@ -52,8 +52,11 @@ module.exports = {
     // referenced by the id in the user session (req.session.me)
     User.findOne(req.session.me, function foundUser(err, user) {
       if (err) return res.negotiate(err);
+
+      // If session refers to a user who no longer exists, still allow logout.
       if (!user) {
-        return res.serverError('Session refers to a user who no longer exists.');
+        sails.log.warn('Session refers to a user who no longer exists.');
+        return res.backToHomePage();
       }
 
       // The user is "logging out" (e.g. destroying the session)
@@ -76,12 +79,8 @@ module.exports = {
         // Wipe out the session (log out)
         req.session.me = null;
 
-        // All done- either send back a 200 OK message (e.g. for AJAX requests)
-        if (req.wantsJSON) {
-          return res.ok();
-        }
-        // or redirect to the home page
-        return res.redirect('/');
+        // Either send a 200 OK or redirect to the home page
+        return res.backToHomePage();
 
       });
 

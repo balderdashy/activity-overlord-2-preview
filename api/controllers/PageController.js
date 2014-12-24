@@ -27,7 +27,7 @@ module.exports = {
         return res.serverError('Session refers to a user who no longer exists.');
       }
 
-      return res.view('logged-in', {
+      return res.view('dashboard', {
         me: {
           id: user.id,
           name: user.name,

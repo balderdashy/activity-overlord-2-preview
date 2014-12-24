@@ -10,7 +10,7 @@
     <!--STYLES END-->
     <!--Added this so the client has access to the csrf tag and it's grabbed first service side on every page -->
     <script type="text/javascript">
-    window.BOOTSTRAPPED_DATA = {
+    window.SAILS_LOCALS = {
       csrf: '<%= _csrf %>',
         me: {
         id: '<%= me.id %>',
@@ -20,7 +20,7 @@
     };
     </script>
   </head>
-  <body ng-controller="AdminDashboardCtrl" ng-cloak>
+  <body ng-controller="DashboardCtrl" ng-cloak>
     <!-- container = Fixed-width container container-fluid = full-width -->
     <div class="container-fluid">
       <!-- Creates the navbar -->
@@ -35,7 +35,7 @@
         <!-- This is the brand on the left-hand side. -->
         <a class="navbar-brand" href="/"> activityOverlord</a>
         <!-- This is what is the above collapse button points to when the mark-up below is collapsed -->
-        <div class="collapse navbar-collapse" ng-controller="navBarController">
+        <div class="collapse navbar-collapse">
           <!-- This is what "styles" the li's as navbar items -->
           <ul class="nav navbar-nav" >
             <li ng-class="{'active':getClass('/users')}">
@@ -72,12 +72,8 @@
     <script src="/js/dependencies/angular-route.min.js"></script>
     <script src="/js/dependencies/lodash.min.js"></script>
     <script src="/js/activity-overlord/ActivityOverlord.module.js"></script>
-    <script src="/js/activity-overlord/ui-controls/AdminDashboardCtrl.js"></script>
-    <script src="/js/activity-overlord/ui-controls/EditUserCtrl.js"></script>
+    <script src="/js/activity-overlord/ui-controls/DashboardCtrl.js"></script>
     <script src="/js/activity-overlord/ui-controls/PublicCtrl.js"></script>
-    <script src="/js/activity-overlord/ui-controls/UserProfileCtrl.js"></script>
-    <script src="/js/activity-overlord/ui-controls/appController.js"></script>
-    <script src="/js/activity-overlord/ui-controls/navBarController.js"></script>
     <!--SCRIPTS END-->
   </body>
 </html>
