@@ -37,5 +37,8 @@
     "url": "git://github.com/jgalt/angularactivity.git"
   },
   "author": "jgalt",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "request": "^2.51.0"
+  }
 }
