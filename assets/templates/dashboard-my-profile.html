@@ -1,0 +1,80 @@
+<!-- Error state -->
+<div class="alert alert-info toggle" ng-show="userProfile.errorMsg">
+  <h5>Oops!</h5>
+  <p>Looks like an error occurred.  Please try again later.</p>
+  <code>
+    {{errorMsg}}
+  </code>
+</div>
+
+<!-- Loading state -->
+<div ng-show="userProfile.loading">
+  <span class="overlord-loading-spinner fa fa-spinner"></span>
+  <span>Loading user data...</span>
+</div>
+
+
+<div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4>Edit Profile</h4>
+    </div>
+    <div class="panel-body">
+      <form ng-submit="editMyProfile()">
+        <div class="control-group form-group col-md-12">
+          <label>Your full name</label>
+          <input type="text" class="form-control" placeholder="e.g. Jon Snow" name="name" ng-model="userProfile.properties.name">
+        </div>
+
+        <div class="control-group form-group col-md-12">
+          <label>Your title</label>
+          <input type="text" class="form-control" placeholder="e.g. Lord Commander, Night's Watch" name="title" ng-model="userProfile.properties.title">
+        </div>
+
+        <div class="control-group form-group col-md-12">
+          <label>Your email address</label>
+          <input type="text" class="form-control" placeholder="jon@winterfell.net" name="email" ng-model="userProfile.properties.email">
+        </div>
+        <input type="submit" class="btn btn-lg btn-primary btn-block" value="Save"/>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4>Change Password</h4>
+    </div>
+    <div class="panel-body">
+
+      <!-- Error state -->
+      <div class="alert alert-info toggle" ng-show="changePasswordForm.errorMsg">
+        <h5>Oops!</h5>
+        <p>Looks like an error occurred.  Please try again later.</p>
+        <code>
+          {{changePasswordForm.errorMsg}}
+        </code>
+      </div>
+
+      <form ng-submit="changeMyPassword()">
+        <div class="control-group form-group col-md-12">
+          <label>Choose a password</label>
+          <input type="password" class="form-control" placeholder="at least 6 characters" name="password" ng-model="changePasswordForm.properties.password" id="password">
+        </div>
+
+        <div class="control-group form-group col-md-12">
+          <label>Re-enter your password</label>
+          <input type="password" class="form-control" placeholder="one more time" name="confirmation" ng-model="changePasswordForm.properties.confirmPassword">
+        </div>
+
+        <button type="submit" class="btn btn-lg btn-primary btn-block">
+          <span ng-show="changePasswordForm.saving" class="overlord-loading-spinner fa fa-spinner"></span>
+          <span ng-show="changePasswordForm.saving">Saving...</span>
+          <span ng-hide="changePasswordForm.saving" class="btn-text">Save</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

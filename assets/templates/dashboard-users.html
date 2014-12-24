@@ -48,13 +48,24 @@
       <td> {{user.email}} </td>
 
       <td> <img src="images/admin.png"></td>
-      <td><a href="#/users/{{user.id}}" class="btn btn-sm btn-primary">Show</a></td>
+      <td>
+        <!-- Don't display the "show" button if this user is YOU (the visitor) -->
+        <a ng-hide="me.id == user.id" href="#/users/{{user.id}}" class="btn btn-sm btn-primary">Show</a>
+        <!-- Instead show "My Profile" button -->
+        <a ng-show="me.id == user.id" href="#/profile" class="btn btn-sm btn-primary">My Profile</a>
+      </td>
       <!-- <td><span ng-click="getProfile()" class="btn btn-sm btn-primary pointer">Show</span></td> -->
 
-      <td><a href="#/users/{{user.id}}/edit" class="btn btn-sm btn-warning">Edit</a></td>
+      <td>
+        <!-- Don't show edit button if this user is YOU (the visitor) -->
+        <a ng-hide="me.id == user.id" href="#/users/{{user.id}}/edit" class="btn btn-sm btn-warning">Edit</a>
+      </td>
       <!-- <td><span ng-click="editUser()" class="btn btn-sm btn-primary pointer">Edit</span></td> -->
 
-      <td><a ng-click="deleteUser(user.id)" class="btn btn-sm btn-danger">Delete</a></td>
+      <td>
+        <!-- Don't show delete button if this user is YOU (the visitor) -->
+        <a ng-hide="me.id == user.id" ng-click="deleteUser(user.id)" class="btn btn-sm btn-danger">Delete</a>
+      </td>
       <!-- <td>
         <form action="/user/destroy/1" method="POST">
           <input type="hidden" name="_method" value="delete"/>

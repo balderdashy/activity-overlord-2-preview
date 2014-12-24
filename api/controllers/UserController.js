@@ -9,6 +9,47 @@ module.exports = {
 
 
 
+  update: function (req, res) {
+
+    if (!req.param('id')) return res.badRequest('`id` of user to edit is required');
+
+    (function (cb){
+      var setAttrVals = {};
+
+      if (req.param('name')) {
+        setAttrVals.name = req.param('name');
+      }
+      if (req.param('title')) {
+        setAttrVals.title = req.param('title');
+      }
+      if (req.param('email')) {
+        setAttrVals.email = req.param('email');
+      }
+
+      // Encrypt password if necessary
+      if (!req.param('password')) {
+        return cb(null, setAttrVals);
+      }
+      require('bcrypt').hash(req.param('password'), 10, function passwordEncrypted(err, encryptedPassword) {
+        if (err) return cb(err);
+        setAttrVals.encryptedPassword = encryptedPassword;
+        return cb(null, setAttrVals);
+      });
+    })(function (err, setAttrVals){
+      if (err) return res.negotiate(err);
+
+      // TODO: realtime bit
+
+      User.update(req.param('id'), setAttrVals).exec(function (err){
+        if (err) return res.negotiate(err);
+        return res.ok();
+      });
+    });
+
+  },
+
+
+
   login: function (req, res) {
 
     req.validate({

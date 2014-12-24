@@ -31,6 +31,8 @@ module.exports = {
         me: {
           id: user.id,
           name: user.name,
+          email: user.email,
+          title: user.title,
           isAdmin: !!user.admin
         }
       });

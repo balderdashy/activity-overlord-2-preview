@@ -96,7 +96,7 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
       // Handle known error type(s).
       var emailAddressAlreadyInUse = !sailsResponse.data && sailsResponse.data.error !== 'E_VALIDATION';
       if (emailAddressAlreadyInUse) {
-        // TODO
+        $scope.signupForm.topLevelErrorMessage = 'Email address already in use.';
         return;
       }
 

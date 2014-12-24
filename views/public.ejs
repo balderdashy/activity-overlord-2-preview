@@ -79,26 +79,34 @@
       </ul>
 
 
-      <div class="control-group">
-      <input type="text" class="form-control" placeholder="your name" name="name" ng-model="signupForm.name">
+      <div class="row">
+        <div class="control-group form-group col-md-12">
+          <label>Your full name</label>
+          <input type="text" class="form-control" placeholder="e.g. Jon Snow" name="name" ng-model="signupForm.name">
+        </div>
+
+        <div class="control-group form-group col-md-12">
+          <label>Your title</label>
+          <input type="text" class="form-control" placeholder="e.g. Lord Commander, Night's Watch" name="title" ng-model="signupForm.title">
+        </div>
+
+        <div class="control-group form-group col-md-12">
+          <label>Your email address</label>
+          <input type="text" class="form-control" placeholder="jon@winterfell.net" name="email" ng-model="signupForm.email">
+        </div>
+
+        <div class="control-group form-group col-md-6">
+          <label>Choose a password</label>
+          <input type="password" class="form-control" placeholder="at least 6 characters" name="password" ng-model="signupForm.password" id="password">
+        </div>
+
+        <div class="control-group form-group col-md-6">
+          <label>Re-enter your password</label>
+          <input type="password" class="form-control" placeholder="one more time" name="confirmation" ng-model="signupForm.confirmPassword">
+        </div>
       </div>
 
-      <div class="control-group">
-      <input type="text" class="form-control" placeholder="your title" name="title" ng-model="signupForm.title">
-      </div>
-
-      <div class="control-group">
-      <input type="text" class="form-control" placeholder="email address" name="email" ng-model="signupForm.email">
-      </div>
-
-      <div class="control-group">
-        <input type="password" class="form-control" placeholder="password" name="password" ng-model="signupForm.password" id="password">
-      </div>
-
-      <div class="control-group">
-      <input type="password" class="form-control" placeholder="password confirmation" name="confirmation" ng-model="signupForm.confirmPassword">
-      <br />
-      </div>
+      <br/>
 
       <!-- <input type="submit" class="btn btn-lg btn-primary btn-block" value="Create Account"/> -->
       <button class="btn btn-primary btn-lg btn-block" type="submit">

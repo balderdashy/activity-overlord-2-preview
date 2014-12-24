@@ -12,11 +12,7 @@
     <script type="text/javascript">
     window.SAILS_LOCALS = {
       csrf: '<%= _csrf %>',
-        me: {
-        id: '<%= me.id %>',
-        name: '<%= me.name %>',
-        isAdmin: <%= me.isAdmin %>
-      }
+      me: <%- JSON.stringify(me) %>
     };
     </script>
   </head>
@@ -38,11 +34,11 @@
         <div class="collapse navbar-collapse">
           <!-- This is what "styles" the li's as navbar items -->
           <ul class="nav navbar-nav" >
-            <li ng-class="{'active':getClass('/users')}">
-              <a ng-click="getUserList()">User Administration</a>
+            <li ng-show="me.isAdmin" ng-class="{'active':getClass('/users')}">
+              <a href="#/users">User Administration</a>
             </li>
             <li>
-              <a href="/#signin">Placeholder2</a>
+              <a href="#/profile">My Profile</a>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">

@@ -20,7 +20,7 @@ module.exports = {
 
     email: {
       type: 'string',
-      email: true,
+      // email: true,
       required: true,
       unique: true
     },
@@ -39,4 +39,5 @@ module.exports = {
       defaultsTo: false
     }
   }
+
 };
