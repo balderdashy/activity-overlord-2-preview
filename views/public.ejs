@@ -52,20 +52,29 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
+
           <!-- This is the brand on the left-hand side. -->
           <a class="navbar-brand" href="/#"> activityOverlord</a>
           <div class="collapse navbar-collapse">
-          <form class="navbar-form navbar-right" action="/auth/create" method="POST">
+          <form ng-submit="submitLoginForm()" class="navbar-form navbar-right">
+
+              <!-- Error message -->
+              <ul ng-show="loginForm.topLevelErrorMessage" class="alert alert-danger">
+                <li>
+                  <span>{{loginForm.topLevelErrorMessage}}</span>
+                </li>
+              </ul>
+
               <div class="form-group">
-                  <input type="text" placeholder="Email" name="email" class="form-control">
+                  <input ng-model="loginForm.email" type="text" placeholder="Email" name="email" class="form-control">
               </div>
               <div class="form-group">
-                  <input type="password" placeholder="Password" name="password" class="form-control">
+                  <input ng-model="loginForm.password" type="password" placeholder="Password" name="password" class="form-control">
               </div>
               <button type="submit" class="btn btn-success">
-                <span ng-show="!signupForm.loading">Sign in</span>
-                <span ng-show="signupForm.loading" class="fa fa-spinner"></span>
-                <span ng-show="signupForm.loading">Signing up...</span>
+                <span ng-show="!loginForm.loading">Sign in</span>
+                <span ng-show="loginForm.loading" class="fa fa-spinner"></span>
+                <span ng-show="loginForm.loading">Signing up...</span>
               </button>
               <input type="hidden" name="_csrf" value="<%= _csrf %>" />
           </form>

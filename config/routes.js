@@ -27,6 +27,7 @@ module.exports.routes = {
 
   // JSON API
   'POST /signup': 'UserController.signup',
+  'PUT /login': 'UserController.login',
   '/logout': 'UserController.logout',
   'post /user/create': 'UserController.create',
   'get /auth/destroy': 'AuthController.destroy'

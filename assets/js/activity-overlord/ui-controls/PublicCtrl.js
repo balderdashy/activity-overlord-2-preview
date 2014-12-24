@@ -7,8 +7,13 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
   // Set up initial state
   $scope.signupForm = {
     loading: false,
-    topLevelErrorMessage: null,
+    topLevelErrorMessage: '',
     validationErrors: []
+  };
+
+  $scope.loginForm = {
+    loading: false,
+    topLevelErrorMessage: ''
   };
 
 
@@ -17,6 +22,46 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
   /////////////////////////////////////////////////////////////////////////////////
   // DOM events:
   /////////////////////////////////////////////////////////////////////////////////
+
+
+  $scope.submitLoginForm = function (){
+
+    // Set the loading state (i.e. show loading spinner)
+    $scope.loginForm.loading = true;
+
+    // Wipe out errors since we are now loading from the server again and we aren't sure if
+    // the current form values that were entered are valid or not.
+    $scope.loginForm.topLevelErrorMessage = null;
+
+    // Submit request to Sails.
+    $http.put('/login', {
+      email: $scope.loginForm.email,
+      password: $scope.loginForm.password
+    })
+    .then(function (){
+      // Refresh the page now that we've been logged in.
+      window.location = '/';
+    })
+    .catch(function (res) {
+
+      // Handle known error type(s).
+
+      // Invalid username / password combination.
+      if (res.status === 404) {
+        $scope.loginForm.topLevelErrorMessage = 'Invalid email/password combination.';
+        return;
+      }
+
+      // Otherwise, display generic error if the error is unrecognized.
+      $scope.loginForm.topLevelErrorMessage = 'An unexpected error occurred: '+(res.data||res.status);
+
+    })
+    .finally(function (){
+      $scope.loginForm.loading = false;
+    });
+  };
+
+
 
   $scope.submitSignupForm = function (){
 
