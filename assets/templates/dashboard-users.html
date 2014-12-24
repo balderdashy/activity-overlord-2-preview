@@ -43,8 +43,8 @@
     <tr ng-repeat="user in userList.contents">
 
       <td>
-        <img ng-show="user.hasSession" src="images/icon-online.png">
-        <img ng-show="!user.hasSession" src="images/icon-offline.png">
+        <img ng-show="user.numSocketsConnected > 0" src="images/icon-online.png">
+        <img ng-show="user.numSocketsConnected === 0" src="images/icon-offline.png">
       </td>
       <td> {{user.id}} </td>
       <td> {{user.name}} </td>

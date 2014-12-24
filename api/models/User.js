@@ -37,19 +37,16 @@ module.exports = {
       type: 'string'
     },
 
-    // Whether or not the user is currently online
-    // (i.e. has a browser tab or mobile app open on Activity Overlord)
-    online: {
-      type: 'boolean',
-      defaultsTo: false
+    // Number of sockets connected for this user
+    // (i.e. number of browser tab or mobile app open, logged in, and pointed at Activity Overlord)
+    numSocketsConnected: {
+      type: 'integer',
+      defaultsTo: 0
     },
 
-    // Whether or not the user has a session
-    // (i.e. they logged in recently enough without logging out.
-    // Note that this never expires-- so it is just an approximation)
-    hasSession: {
-      type: 'boolean',
-      defaultsTo: false
+    // The timestamp when the the user last logged in
+    lastLoggedIn: {
+      type: 'date'
     },
 
     // Whether or not the user has administrator privileges

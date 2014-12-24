@@ -10,18 +10,26 @@ module.exports = {
 
   comeOnline: function (req, res) {
 
-    // Flag this user as online.
-    User.update(req.session.me, {
-      online: true
-    }).exec(function (err){
+    // Increment `numSocketsConnected`
+    User.findOne(req.session.me).exec(function (err, user) {
       if (err) return res.negotiate(err);
+      if (!user) {
+        return res.negotiate(new Error('User associated with disconnecting socket no longer exists.'));
+      }
 
-      // Tell anyone who is allowed to hear about it that this user is online.
-      User.publishUpdate(req.session.me, {
-        online: true
+      User.update(user.id, {
+        numSocketsConnected: user.numSocketsConnected+1
+      }).exec(function (err){
+        if (err) return res.negotiate(err);
+
+        // Tell anyone who is allowed to hear about it that this user
+        // has one more socket connected (e.g. browser tab open)
+        User.publishUpdate(req.session.me, {
+          numSocketsConnected: user.numSocketsConnected+1
+        });
+
+        return res.ok();
       });
-
-      return res.ok();
     });
   },
 
@@ -187,16 +195,16 @@ module.exports = {
         }
 
         // The user is "logging in" (e.g. establishing a session)
-        // so change the `hasSession` attribute to true.
+        // so update the `lastLoggedIn` attribute.
         User.update(user.id, {
-          hasSession: true
+          lastLoggedIn: new Date()
         }, function(err) {
           if (err) return res.negotiate(err);
 
           // Inform other sockets (e.g. connected sockets that are subscribed)
           // that this user has logged in.
           User.publishUpdate(user.id, {
-            hasSession: true
+            lastLoggedIn: new Date()
           });
 
           // Store user id in the user session
@@ -225,26 +233,11 @@ module.exports = {
         return res.backToHomePage();
       }
 
-      // The user is "logging out" (e.g. destroying the session)
-      // so change the `hasSession` attribute to false.
-      User.update(user.id, {
-        hasSession: false
-      }, function(err) {
-        if (err) return res.negotiate(err);
+      // Wipe out the session (log out)
+      req.session.me = null;
 
-        // Inform other sockets (e.g. connected sockets that are subscribed)
-        // that this user has logged out.
-        User.publishUpdate(user.id, {
-          hasSession: false
-        });
-
-        // Wipe out the session (log out)
-        req.session.me = null;
-
-        // Either send a 200 OK or redirect to the home page
-        return res.backToHomePage();
-
-      });
+      // Either send a 200 OK or redirect to the home page
+      return res.backToHomePage();
 
     });
   },

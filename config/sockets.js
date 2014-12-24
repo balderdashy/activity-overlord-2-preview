@@ -122,23 +122,32 @@ module.exports.sockets = {
   ***************************************************************************/
   afterDisconnect: function(session, socket, cb) {
 
-    console.log('AFTERDISCONNECT  session:',session);
     // If the user wasn't logged in, we don't care.
     if (!session.me) return cb();
 
-    // Flag this user as offline.
-    User.update(session.me, {
-      online: false
-    }).exec(function (err){
+
+    // Decrement `numSocketsConnected`
+    User.findOne(session.me).exec(function (err, user) {
       if (err) return cb(err);
+      if (!user) {
+        return cb(new Error('User associated with disconnecting socket no longer exists.'));
+      }
 
-      // Tell anyone who is allowed to hear about it that this user is offline.
-      User.publishUpdate(session.me, {
-        online: false
+      User.update(user.id, {
+        numSocketsConnected: user.numSocketsConnected-1 < 0 ? 0 : user.numSocketsConnected-1
+      }).exec(function (err){
+        if (err) return cb(err);
+
+        // Tell anyone who is allowed to hear about it that this user
+        // has one fewer socket connected (e.g. browser tab open)
+        User.publishUpdate(session.me, {
+          numSocketsConnected: user.numSocketsConnected-1 < 0 ? 0 : user.numSocketsConnected-1
+        });
+
+        return cb();
       });
-
-      return cb();
     });
+
   },
 
 
