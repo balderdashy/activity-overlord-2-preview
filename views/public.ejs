@@ -21,6 +21,11 @@
 
   <body ng-app="ActivityOverlord" ng-controller="PublicCtrl" ng-cloak>
 
+    <!-- Global errors (uiErrorBus) -->
+    <div class="ui-error-bus">
+      <li ng-repeat="error in errorBus"><span>{{error.message}}</span><span ng-click="errorBus.splice(indexOf(error), 1)" class="fa fa-remove"></span></li>
+    </div>
+
     <div class="container-fluid">
       <!-- Creates the navbar -->
         <nav class="navbar navbar-default navbar-inverse">
@@ -137,6 +142,7 @@
     <script src="/js/dependencies/angular-route.min.js"></script>
     <script src="/js/dependencies/lodash.min.js"></script>
     <script src="/js/activity-overlord/ActivityOverlord.module.js"></script>
+    <script src="/js/activity-overlord/factories/uiErrorBus.factory.js"></script>
     <script src="/js/activity-overlord/ui-controls/DashboardCtrl.js"></script>
     <script src="/js/activity-overlord/ui-controls/PublicCtrl.js"></script>
     <!--SCRIPTS END-->

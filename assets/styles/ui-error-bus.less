@@ -1,0 +1,36 @@
+// .ui-error-bus
+//
+// Used for showing flash messages
+//
+// Example usage:
+// ------------------------------------------------
+// <div class="ui-error-bus">
+//  <li>An error occurred.</li>
+// </div>
+// ------------------------------------------------
+.ui-error-bus {
+  z-index: 100000;
+  position: absolute;
+  top: 4px;
+
+  // TODO: extrapolate all this stuff out into a mixin:
+  //////////////////////////////////////////////////////
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+  li {
+    border-radius: 2px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 14px;
+    box-shadow: 0 0 15px rgba(100,100,100, 0.5);
+    background: goldenrod;
+    display: block;
+    width: 50%;
+    min-width: 600px;
+    text-align: center;
+    color: #222;
+    padding: 5px;
+  }
+  //////////////////////////////////////////////////////
+}

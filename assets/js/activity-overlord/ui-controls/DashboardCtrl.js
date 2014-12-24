@@ -1,4 +1,4 @@
-angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
+angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', 'uiErrorBus', function($scope, $http, uiErrorBus) {
 SCOPE=$scope;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -225,18 +225,7 @@ SCOPE=$scope;
       });
     })
     .catch(function onError(sailsResponse){
-      // Handle known error type(s):
-
-      // tODO: toast messages (maybe uiErrorBus?)
-
-      // // • User no longer exists.
-      // if (sailsResponse.status === 404) {
-      //   $otherUser.errorMsg = 'Cannot delete user-- does not exist.';
-      //   return;
-      // }
-
-      // // • Otherwise display generic error.
-      // $otherUser.errorMsg = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
+      uiErrorBus.handleError(sailsResponse.data||sailsResponse.status);
     })
     .finally(function eitherWay(){
       // Disable loading state (if still relevant)

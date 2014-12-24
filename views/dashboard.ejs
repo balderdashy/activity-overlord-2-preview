@@ -17,6 +17,12 @@
     </script>
   </head>
   <body ng-controller="DashboardCtrl" ng-cloak>
+
+    <!-- Global errors (uiErrorBus) -->
+    <div class="ui-error-bus">
+      <li ng-repeat="error in errorBus"><span>{{error.message}}</span><span ng-click="errorBus.splice(indexOf(error), 1)" class="fa fa-remove"></span></li>
+    </div>
+
     <!-- container = Fixed-width container container-fluid = full-width -->
     <div class="container-fluid">
       <!-- Creates the navbar -->
@@ -72,6 +78,7 @@
     <script src="/js/dependencies/angular-route.min.js"></script>
     <script src="/js/dependencies/lodash.min.js"></script>
     <script src="/js/activity-overlord/ActivityOverlord.module.js"></script>
+    <script src="/js/activity-overlord/factories/uiErrorBus.factory.js"></script>
     <script src="/js/activity-overlord/ui-controls/DashboardCtrl.js"></script>
     <script src="/js/activity-overlord/ui-controls/PublicCtrl.js"></script>
     <!--SCRIPTS END-->

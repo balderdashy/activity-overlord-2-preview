@@ -1,4 +1,4 @@
-angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
+angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', '$location', 'uiErrorBus', function($scope, $http, $location, uiErrorBus) {
 
   /////////////////////////////////////////////////////////////////////////////////
   // When HTML is rendered...
