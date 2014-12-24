@@ -9,6 +9,30 @@ module.exports = {
 
 
   /**
+   * This action is mainly here to demonstrate exactly what the
+   * pubsub/sockets part of the `find` blueprint does.
+   */
+  watchAndSubscribeToAll: function (req, res){
+
+    // "Watch" the User model to hear about `publishCreate`'s.
+    User.watch(req);
+
+    // We only find the users here so we can subscribe to them.
+    User.find().exec(function (err, users) {
+      if (err) return res.negotiate(err);
+
+      // "Subscribe" to each User record to hear about
+      // `publishUpdate`'s and `publishDestroy`'s
+      _.each(users, function (users) {
+        User.subscribe(req,userId);
+      });
+
+      return res.ok();
+    });
+  },
+
+
+  /**
    * Update your own profile ("you" being the currently-logged in user)
    */
   updateMyProfile: function (req, res) {
@@ -100,6 +124,10 @@ module.exports = {
 
 
 
+  /**
+   * Check the provided email address and password, and if they
+   * match a real user in the database, sign in to Activity Overlord.
+   */
   login: function (req, res) {
 
     req.validate({

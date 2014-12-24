@@ -20,8 +20,13 @@
 module.exports.policies = {
 
   UserController: {
+
     logout: ['isLoggedIn'],
+    updateMyProfile: ['isLoggedIn'],
+    watchAndSubscribeToAll: ['isLoggedIn'],
+
+    find: ['isAdmin'],
     update: ['isAdmin'],
-    updateMyProfile: ['isLoggedIn']
+    destroy: ['isAdmin']
   }
 };

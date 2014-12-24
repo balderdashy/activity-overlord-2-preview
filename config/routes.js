@@ -42,8 +42,11 @@ module.exports.routes = {
   // Update my profile
   'PUT /me': 'UserController.updateMyProfile',
 
-  // List users
+  // List users (also watch and subscribe to all)
   'GET /users': 'UserController.find',
+
+  // "Watch" the user model and "subscribe" to each user record.
+  'GET /users/watch': 'UserController.watchAndSubscribeToAll',
 
   // Get user profile
   'GET /users/:id': 'UserController.findOne',

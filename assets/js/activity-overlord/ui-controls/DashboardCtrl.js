@@ -31,19 +31,14 @@ angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http
   $scope.me = window.SAILS_LOCALS.me;
 
 
-  // Send request to Sails to fetch list of users.
-  $scope.userList.loading = true;
-  $scope.userList.errorMsg = '';
-  $http.get('/users')
-  .then(function onSuccess(sailsResponse) {
-    $scope.userList.contents = sailsResponse.data;
-  })
-  .catch(function onError(sailsResponse) {
-    // Display generic error, since there are no expected errors.
-    $scope.userList.errorMsg = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
-  })
-  .finally(function eitherWay(){
-    $scope.userList.loading = false;
+  // "Watch" the user model and "subscribe" to each user record.
+  io.socket.get('/users/watch', function (unused, jwr) {
+    if (jwr.error){
+      console.error('Error subscribing to user events.');
+      return;
+    }
+
+    // OK! Now we're subscribed to all of the user records in the database.
   });
 
 
