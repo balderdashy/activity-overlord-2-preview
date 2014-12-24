@@ -1,4 +1,4 @@
-angular.module('activityApp').controller('navBarController', ['$rootScope', '$scope', '$location', function ($rootScope, $scope, $location) {
+angular.module('ActivityOverlord').controller('navBarController', ['$rootScope', '$scope', '$location', function ($rootScope, $scope, $location) {
 
 	// console.log('rootScope in navbar controller:', $rootScope);
 	// console.log('scope in navbar controller:', $scope);
@@ -8,9 +8,9 @@ angular.module('activityApp').controller('navBarController', ['$rootScope', '$sc
   // The getClass method works with the markup like this:
   //<li ng-class="{'active':getClass('/users')}"><a href="/#users">User Administration</a></li>
   // If the path is equal to /users than make the a tag active.
-  // 
+  //
   // console.log("This is scope: ", $scope);
-  // 
+  //
   console.log("Making it here")
 
     $scope.getClass = function (path) {

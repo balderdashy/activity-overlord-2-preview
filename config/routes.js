@@ -22,12 +22,13 @@
 
 module.exports.routes = {
 
-  'get /': 'StaticController.serveSPA',
+  // Dynamic HTML webpages
+  'get /': 'PageController.showHomePage',
 
-  'get /user/new': 'UserController.new',
-
+  // JSON API
+  'POST /signup': 'UserController.signup',
+  '/logout': 'UserController.logout',
   'post /user/create': 'UserController.create',
-
   'get /auth/destroy': 'AuthController.destroy'
 
 };

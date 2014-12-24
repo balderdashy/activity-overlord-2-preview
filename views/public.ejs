@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>New Sails App</title>
+    <title>Activity Overlord (angular)</title>
 
     <!-- Viewport mobile tag for sensible mobile support -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    
-    <!--  
+
+    <!--
         Stylesheets and Preprocessors
         ==============================
 
         You can always bring in CSS files manually with `<link>` tags, or asynchronously
-        using a solution like AMD (RequireJS).  Or, if you like, you can take advantage 
+        using a solution like AMD (RequireJS).  Or, if you like, you can take advantage
         of Sails' conventional asset pipeline (boilerplate Gruntfile).
 
         By default, stylesheets from your `assets/styles` folder are included
         here automatically (between STYLES and STYLES END). Both CSS (.css) and LESS (.less)
         are supported. In production, your styles will be minified and concatenated into
         a single file.
-        
+
         To customize any part of the built-in behavior, just edit `tasks/pipeline.js`.
         For example, here are a few things you could do:
-            
+
             + Change the order of your CSS files
             + Import stylesheets from other directories
             + Use a different or additional preprocessor, like SASS, SCSS or Stylus
@@ -34,13 +34,14 @@
     <!--STYLES END-->
 
     <!--Added this so the client has access to the csrf tag and it's grabbed first service side on every page -->
-      <script type="text/javascript">
-          window.overlord = { csrf: "<%= _csrf %>" };
-      </script>
+    <script type="text/javascript">
+        window.overlord = { csrf: "<%= _csrf %>" };
+    </script>
 
   </head>
 
-  <body>
+  <body ng-app="ActivityOverlord" ng-controller="PublicCtrl" ng-cloak>
+
     <div class="container-fluid">
       <!-- Creates the navbar -->
         <nav class="navbar navbar-default navbar-inverse">
@@ -52,7 +53,7 @@
             <span class="icon-bar"></span>
           </button>
           <!-- This is the brand on the left-hand side. -->
-          <a class="navbar-brand" href="/#"> activityOverlord</a>    
+          <a class="navbar-brand" href="/#"> activityOverlord</a>
           <div class="collapse navbar-collapse">
           <form class="navbar-form navbar-right" action="/auth/create" method="POST">
               <div class="form-group">
@@ -61,13 +62,68 @@
               <div class="form-group">
                   <input type="password" placeholder="Password" name="password" class="form-control">
               </div>
-              <button type="submit" class="btn btn-success">Sign in</button>
+              <button type="submit" class="btn btn-success">
+                <span ng-show="!signupForm.loading">Sign in</span>
+                <span ng-show="signupForm.loading" class="fa fa-spinner"></span>
+                <span ng-show="signupForm.loading">Signing up...</span>
+              </button>
               <input type="hidden" name="_csrf" value="<%= _csrf %>" />
           </form>
         </nav>
       </div>
     </div>
-    <%- body %>
+
+
+
+    <form ng-submit="submitSignupForm()" id="sign-up-form" class="form-signin">
+      <h2 class="form-signin-heading">Create an account</h2>
+
+      <ul ng-show="signupForm.topLevelErrorMessage" class="alert alert-danger">
+        <li>
+          <span>{{signupForm.topLevelErrorMessage}}</span>
+        </li>
+      </ul>
+
+      <ul ng-show="signupForm.validationErrors.length > 0" class="alert alert-danger">
+        <li ng-repeat="error in signupForm.validationErrors track by $index">
+          <span>{{error}}</span>
+        </li>
+      </ul>
+
+
+      <div class="control-group">
+      <input type="text" class="form-control" placeholder="your name" name="name" ng-model="signupForm.name">
+      </div>
+
+      <div class="control-group">
+      <input type="text" class="form-control" placeholder="your title" name="title" ng-model="signupForm.title">
+      </div>
+
+      <div class="control-group">
+      <input type="text" class="form-control" placeholder="email address" name="email" ng-model="signupForm.email">
+      </div>
+
+      <div class="control-group">
+        <input type="password" class="form-control" placeholder="password" name="password" ng-model="signupForm.password" id="password">
+      </div>
+
+      <div class="control-group">
+      <input type="password" class="form-control" placeholder="password confirmation" name="confirmation" ng-model="signupForm.confirmPassword">
+      <br />
+      </div>
+
+      <!-- <input type="submit" class="btn btn-lg btn-primary btn-block" value="Create Account"/> -->
+      <button class="btn btn-primary btn-lg btn-block" type="submit">
+        <span ng-show="!signupForm.loading">Create Account</span>
+        <span class="overlord-loading-spinner fa fa-spinner" ng-show="signupForm.loading" ></span>
+        <span ng-show="signupForm.loading">Preparing your new account...</span>
+      </button>
+
+      <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+    </form>
+
+
+
     <div class="container">
         <hr>
         <footer class="footer pull-right">
@@ -91,7 +147,7 @@
         By default, your Gruntfile is configured to automatically load and precompile
         client-side JST templates in your `assets/templates` folder, then
         include them here automatically (between TEMPLATES and TEMPLATES END).
-        
+
         To customize this behavior to fit your needs, just edit `tasks/pipeline.js`.
         For example, here are a few things you could do:
 
@@ -112,17 +168,17 @@
       ========================
 
       You can always bring in JS files manually with `script` tags, or asynchronously
-      on the client using a solution like AMD (RequireJS).  Or, if you like, you can 
+      on the client using a solution like AMD (RequireJS).  Or, if you like, you can
       take advantage of Sails' conventional asset pipeline (boilerplate Gruntfile).
 
       By default, files in your `assets/js` folder are included here
       automatically (between SCRIPTS and SCRIPTS END).  Both JavaScript (.js) and
       CoffeeScript (.coffee) are supported. In production, your scripts will be minified
       and concatenated into a single file.
-      
+
       To customize any part of the built-in behavior, just edit `tasks/pipeline.js`.
       For example, here are a few things you could do:
-          
+
           + Change the order of your scripts
           + Import scripts from other directories
           + Use a different preprocessor, like TypeScript
@@ -144,3 +200,4 @@
     <!--SCRIPTS END-->
   </body>
 </html>
+
