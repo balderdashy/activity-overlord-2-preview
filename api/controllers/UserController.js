@@ -279,7 +279,7 @@ module.exports = {
           title: req.param('title'),
           email: req.param('email'),
           encryptedPassword: encryptedPassword,
-          online: true
+          lastLoggedIn: new Date()
         }, function userCreated(err, newUser) {
           if (err) {
 
@@ -302,7 +302,7 @@ module.exports = {
             name: newUser.name,
             title: newUser.title,
             email: newUser.email,
-            online: true
+            lastLoggedIn: newUser.lastLoggedIn
           });
 
           // Send back the id of the new user
