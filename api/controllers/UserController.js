@@ -64,24 +64,25 @@ module.exports = {
    * Update your own profile ("you" being the currently-logged in user)
    */
   updateMyProfile: function (req, res) {
-    (function (cb){
+
+    (function _prepareAttributeValuesToSet(allParams, cb){
       var setAttrVals = {};
 
-      if (req.param('name')) {
-        setAttrVals.name = req.param('name');
+      if (allParams.name) {
+        setAttrVals.name = allParams.name;
       }
-      if (req.param('title')) {
-        setAttrVals.title = req.param('title');
+      if (allParams.title) {
+        setAttrVals.title = allParams.title;
       }
-      if (req.param('email')) {
-        setAttrVals.email = req.param('email');
+      if (allParams.email) {
+        setAttrVals.email = allParams.email;
       }
 
       // Encrypt password if necessary
-      if (!req.param('password')) {
+      if (!allParams.password) {
         return cb(null, setAttrVals);
       }
-      require('machinepack-passwords').encryptPassword({password: req.param('password')}).exec({
+      require('machinepack-passwords').encryptPassword({password: allParams.password}).exec({
         error: function (err){
           return cb(err);
         },
@@ -90,7 +91,7 @@ module.exports = {
           return cb(null, setAttrVals);
         }
       });
-    })(function (err, attributeValsToSet){
+    })(req.allParams(), function (err, attributeValsToSet){
       if (err) return res.negotiate(err);
 
       User.update(req.session.me, attributeValsToSet).exec(function (err){
@@ -120,30 +121,30 @@ module.exports = {
       return res.badRequest('`id` of user to edit is required');
     }
 
-    (function (cb){
+    (function _prepareAttributeValuesToSet(allParams, cb){
       var setAttrVals = {};
 
-      if (req.param('name')) {
-        setAttrVals.name = req.param('name');
+      if (allParams.name) {
+        setAttrVals.name = allParams.name;
       }
-      if (req.param('title')) {
-        setAttrVals.title = req.param('title');
+      if (allParams.title) {
+        setAttrVals.title = allParams.title;
       }
-      if (req.param('email')) {
-        setAttrVals.email = req.param('email');
+      if (allParams.email) {
+        setAttrVals.email = allParams.email;
       }
 
       // In this case, we use _.isUndefined (which is pretty much just `typeof X==='undefined'`)
       // because the parameter could be sent as `false`, which we **do** care about.
-      if ( !_.isUndefined(req.param('admin')) ) {
-        setAttrVals.admin = req.param('admin');
+      if ( !_.isUndefined(allParams.admin) ) {
+        setAttrVals.admin = allParams.admin;
       }
 
       // Encrypt password if necessary
-      if (!req.param('password')) {
+      if (!allParams.password) {
         return cb(null, setAttrVals);
       }
-      require('machinepack-passwords').encryptPassword({password: req.param('password')}).exec({
+      require('machinepack-passwords').encryptPassword({password: allParams.password}).exec({
         error: function (err){
           return cb(err);
         },
@@ -152,7 +153,7 @@ module.exports = {
           return cb(null, setAttrVals);
         }
       });
-    })(function (err, attributeValsToSet){
+    })(req.allParams(), function (err, attributeValsToSet){
       if (err) return res.negotiate(err);
 
       User.update(req.param('id'), attributeValsToSet).exec(function (err){
