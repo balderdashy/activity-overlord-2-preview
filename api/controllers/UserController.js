@@ -36,7 +36,9 @@ module.exports = {
 
   /**
    * This action is mainly here to demonstrate exactly what the
-   * pubsub/sockets part of the `find` blueprint does.
+   * pubsub/sockets part of the `find` blueprint does. We could have just
+   * used `io.socket.get('/users')` from the front-end, which would have
+   * achieved the same effect (since GET /users is hooked up to "UserController.find")
    */
   watchAndSubscribeToAll: function (req, res){
 
