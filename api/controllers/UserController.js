@@ -81,10 +81,14 @@ module.exports = {
       if (!req.param('password')) {
         return cb(null, setAttrVals);
       }
-      require('bcrypt').hash(req.param('password'), 10, function passwordEncrypted(err, encryptedPassword) {
-        if (err) return cb(err);
-        setAttrVals.encryptedPassword = encryptedPassword;
-        return cb(null, setAttrVals);
+      require('machinepack-passwords').encryptPassword({password: req.param('password')}).exec({
+        error: function (err){
+          return cb(err);
+        },
+        success: function (encryptedPassword){
+          setAttrVals.encryptedPassword = encryptedPassword;
+          return cb(null, setAttrVals);
+        }
       });
     })(function (err, attributeValsToSet){
       if (err) return res.negotiate(err);
@@ -139,10 +143,14 @@ module.exports = {
       if (!req.param('password')) {
         return cb(null, setAttrVals);
       }
-      require('bcrypt').hash(req.param('password'), 10, function passwordEncrypted(err, encryptedPassword) {
-        if (err) return cb(err);
-        setAttrVals.encryptedPassword = encryptedPassword;
-        return cb(null, setAttrVals);
+      require('machinepack-passwords').encryptPassword({password: req.param('password')}).exec({
+        error: function (err){
+          return cb(err);
+        },
+        success: function (encryptedPassword) {
+          setAttrVals.encryptedPassword = encryptedPassword;
+          return cb(null, setAttrVals);
+        }
       });
     })(function (err, attributeValsToSet){
       if (err) return res.negotiate(err);
@@ -187,37 +195,44 @@ module.exports = {
 
       // Compare password attempt from the form params to the encrypted password
       // from the database (`user.password`)
-      require('bcrypt').compare(req.param('password'), user.encryptedPassword, function(err, valid) {
-        if (err) return res.negotiate(err);
+      require('machinepack-passwords').checkPassword({
+        passwordAttempt: req.param('password'),
+        encryptedPassword: user.encryptedPassword
+      }).exec({
+
+        error: function (err){
+          return res.negotiate(err);
+        },
 
         // If the password from the form params doesn't checkout w/ the encrypted
         // password from the database...
-        if (!valid) {
+        incorrect: function (){
           return res.notFound();
-        }
+        },
 
-        // The user is "logging in" (e.g. establishing a session)
-        // so update the `lastLoggedIn` attribute.
-        User.update(user.id, {
-          lastLoggedIn: new Date()
-        }, function(err) {
-          if (err) return res.negotiate(err);
+        success: function (){
 
-          // Inform other sockets (e.g. connected sockets that are subscribed)
-          // that this user has logged in.
-          User.publishUpdate(user.id, {
+          // The user is "logging in" (e.g. establishing a session)
+          // so update the `lastLoggedIn` attribute.
+          User.update(user.id, {
             lastLoggedIn: new Date()
+          }, function(err) {
+            if (err) return res.negotiate(err);
+
+            // Inform other sockets (e.g. connected sockets that are subscribed)
+            // that this user has logged in.
+            User.publishUpdate(user.id, {
+              lastLoggedIn: new Date()
+            });
+
+            // Store user id in the user session
+            req.session.me = user.id;
+
+            // All done- let the client know that everything worked.
+            return res.ok();
           });
-
-          // Store user id in the user session
-          req.session.me = user.id;
-
-          // All done- let the client know that everything worked.
-          return res.ok();
-        });
-
-      });// </bcrypt.compare>
-
+        }
+      });
     });
   },
 
@@ -249,48 +264,55 @@ module.exports = {
   signup: function(req, res) {
 
     // Encrypt the password provided by the user
-    require('bcrypt').hash(req.param('password'), 10, function passwordEncrypted(err, encryptedPassword) {
-      if (err) return res.negotiate(err);
+    require('machinepack-passwords').encryptPassword({
+      password: req.param('password')
+    }).exec({
+      error: function (err) {
+        return res.negotiate(err);
+      },
+      success: function (encryptedPassword) {
 
-      // Create a User with the params sent from
-      // the sign-up form --> new.ejs
-      User.create({
-        name: req.param('name'),
-        title: req.param('title'),
-        email: req.param('email'),
-        encryptedPassword: encryptedPassword,
-        online: true
-      }, function userCreated(err, newUser) {
-        if (err) {
+        // Create a User with the params sent from
+        // the sign-up form --> new.ejs
+        User.create({
+          name: req.param('name'),
+          title: req.param('title'),
+          email: req.param('email'),
+          encryptedPassword: encryptedPassword,
+          online: true
+        }, function userCreated(err, newUser) {
+          if (err) {
 
-          // If this is a uniqueness error about the email attribute,
-          // send back an easily parseable status code.
-          if (err.invalidAttributes && err.invalidAttributes.email && err.invalidAttributes.email[0] && err.invalidAttributes.email[0].rule === 'unique'){
-            return res.emailAddressInUse();
+            // If this is a uniqueness error about the email attribute,
+            // send back an easily parseable status code.
+            if (err.invalidAttributes && err.invalidAttributes.email && err.invalidAttributes.email[0] && err.invalidAttributes.email[0].rule === 'unique'){
+              return res.emailAddressInUse();
+            }
+
+            // Otherwise, send back something reasonable as our error response.
+            return res.negotiate(err);
           }
 
-          // Otherwise, send back something reasonable as our error response.
-          return res.negotiate(err);
-        }
+          // Log user in
+          req.session.me = newUser.id;
 
-        // Log user in
-        req.session.me = newUser.id;
+          // Let other subscribed sockets know that the user was created.
+          User.publishCreate({
+            id: newUser.id,
+            name: newUser.name,
+            title: newUser.title,
+            email: newUser.email,
+            online: true
+          });
 
-        // Let other subscribed sockets know that the user was created.
-        User.publishCreate({
-          id: newUser.id,
-          name: newUser.name,
-          title: newUser.title,
-          email: newUser.email,
-          online: true
+          // Send back the id of the new user
+          return res.json({
+            id: newUser.id
+          });
+
         });
 
-        // Send back the id of the new user
-        return res.json({
-          id: newUser.id
-        });
-
-      });
+      }
     });
   }
 
