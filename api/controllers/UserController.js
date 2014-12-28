@@ -8,6 +8,13 @@
 module.exports = {
 
 
+
+
+  /**
+   * This action is the first endpoint hit by logged-in sockets after they connect.
+   * This is implemented by our web front-end in:
+   * `assets/js/activity-overlord/ui-controls/DashboardCtrl.js`
+   */
   comeOnline: function (req, res) {
 
     // Increment `numSocketsConnected`
@@ -32,6 +39,8 @@ module.exports = {
       });
     });
   },
+
+
 
 
   /**
@@ -60,8 +69,11 @@ module.exports = {
   },
 
 
+
+
   /**
-   * Update your own profile ("you" being the currently-logged in user)
+   * Update your own profile
+   * ("you" being the currently-logged in user, aka `req.session.me`)
    */
   updateMyProfile: function (req, res) {
 
@@ -109,6 +121,7 @@ module.exports = {
       });
     });
   },
+
 
 
 
@@ -176,6 +189,7 @@ module.exports = {
 
 
 
+
   /**
    * Check the provided email address and password, and if they
    * match a real user in the database, sign in to Activity Overlord.
@@ -238,6 +252,12 @@ module.exports = {
   },
 
 
+
+
+  /**
+   * Log out of Activity Overlord.
+   * (wipes `me` from the sesion)
+   */
   logout: function (req, res) {
 
     // Look up the user record from the database which is
@@ -261,7 +281,12 @@ module.exports = {
   },
 
 
-  // Sign up for a user account (create a new user)
+
+
+  /**
+   * Sign up for a user account.
+   * (creates a new user, and also logs in as that new user)
+   */
   signup: function(req, res) {
 
     // Encrypt the password provided by the user
@@ -316,5 +341,8 @@ module.exports = {
       }
     });
   }
+
+
+
 
 };
