@@ -9,6 +9,7 @@ module.exports = {
 
 
 
+
 	showHomePage: function (req, res) {
 
     // If not logged in, show the public view.
@@ -39,6 +40,7 @@ module.exports = {
 
     });
   },
+
 
 
 
