@@ -12,6 +12,30 @@ angular.module('ActivityOverlord')
   $httpProvider.defaults.headers.common['X-CSRF-Token'] = window.SAILS_LOCALS._csrf;
 }]);
 
+// A directive to compare passwords in a form by K. Scott Allen
+// http://odetocode.com/blogs/scott/archive/2014/10/13/confirm-password-validation-in-angularjs.aspx
+
+var compareTo = function() {
+    return {
+        require: "ngModel",
+        scope: {
+            otherModelValue: "=compareTo"
+        },
+        link: function(scope, element, attributes, ngModel) {
+             
+            ngModel.$validators.compareTo = function(modelValue) {
+                return modelValue == scope.otherModelValue;
+            };
+ 
+            scope.$watch("otherModelValue", function() {
+                ngModel.$validate();
+            });
+        }
+    };
+};
+ 
+angular.module('ActivityOverlord').directive("compareTo", compareTo);
+
 // Listen for url fragment changes like "#/foo/bar-baz" so we can change the contents
 // of the <ng-view> tag (if it exists)
 angular.module('ActivityOverlord')

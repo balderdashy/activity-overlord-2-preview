@@ -68,7 +68,7 @@
 
 
 
-    <form ng-submit="submitSignupForm()" id="sign-up-form" class="form-signin">
+    <form ng-submit="submitSignupForm()" id="sign-up-form" class="form-signin" name="signup">
       <h2 class="form-signin-heading">Create an account</h2>
 
       <ul ng-show="signupForm.topLevelErrorMessage" class="alert alert-danger">
@@ -85,36 +85,81 @@
 
 
       <div class="row">
-        <div class="control-group form-group col-md-12">
+
+        <!-- N A M E -->
+
+        <!-- checking whether the form "signup" with the "name" property is both $invalid AND $dirty.  If it is
+        insert the "has-error" class on the input field (i.e. insert a red border)
+        -->
+        <div class="control-group form-group col-md-12"
+        ng-class="{'has-error':signup.name.$invalid &&
+                              signup.name.$dirty}">
           <label>Your full name</label>
-          <input type="text" class="form-control" placeholder="e.g. Jon Snow" name="name" ng-model="signupForm.name">
+
+          <!-- For this input field make it required, and have a min and max length -->
+          <input type="text" class="form-control" placeholder="e.g. Jon Snow" name="name" ng-model="signupForm.name" required>
+
+          <!-- Also, if signup.name.$dirty is true, show the message depending upon the particular properties truthiness (e.g. required
+          and/or minlength) -->
+          <span class="help-block has-error" ng-if="signup.name.$dirty">
+            <span ng-show="signup.name.$error.required">Name is required.</span>
+          </span>
         </div>
+
+        <!-- T I T L E -->
 
         <div class="control-group form-group col-md-12">
           <label>Your title</label>
           <input type="text" class="form-control" placeholder="e.g. Lord Commander, Night's Watch" name="title" ng-model="signupForm.title">
+          <span class="help-block has-error" ng-if="signup.name.$dirty">
+            <span ng-show="signup.name.$error.required">Title is required.</span>
+          </span>
         </div>
 
-        <div class="control-group form-group col-md-12">
+        <!-- E M A I L -->
+
+        <div class="control-group form-group col-md-12"
+        ng-class="{'has-error':signup.email.$invalid &&
+                              signup.email.$dirty}">
           <label>Your email address</label>
-          <input type="text" class="form-control" placeholder="jon@winterfell.net" name="email" ng-model="signupForm.email">
+          <input type="email" class="form-control" placeholder="jon@winterfell.net" name="email" ng-model="signupForm.email" required>
+          <span class="help-block has-error" ng-if="signup.email.$dirty">
+            <span ng-show="signup.email.$error.required">Email address is required.</span>
+            <span ng-show="signup.email.$error.email">Not a valid email address.</span>
+          </span>
         </div>
 
-        <div class="control-group form-group col-md-6">
+        <!-- P A S S W O R D -->
+
+        <div class="control-group form-group col-md-6"
+        ng-class="{'has-error':signup.password.$invalid &&
+                              signup.password.$dirty}">
           <label>Choose a password</label>
-          <input type="password" class="form-control" placeholder="at least 6 characters" name="password" ng-model="signupForm.password" id="password">
+          <!-- Added the compareTo directive that compares the passowrds -->
+          <input type="password" class="form-control" placeholder="at least 6 characters" name="password" ng-model="signupForm.password" id="password" required ng-minlength="5" compare-to="signupForm.confirmPassword" >
+          <span class="help-block has-error" ng-if="signup.email.$dirty">
+            <span ng-show="signup.password.$error.required">Password is required.</span>
+            <span ng-show="signup.password.$error.minlength">Password must be at least 6 characters.</span>
+            <span ng-show="signup.password.$error.minlength">Password must be at least 6 characters.</span>
+          </span>
         </div>
+
+        <!-- C O N F I R M  P A S S W O R D -->
 
         <div class="control-group form-group col-md-6">
           <label>Re-enter your password</label>
-          <input type="password" class="form-control" placeholder="one more time" name="confirmation" ng-model="signupForm.confirmPassword">
+          <input type="password" class="form-control" placeholder="one more time" name="confirmation" ng-model="signupForm.confirmPassword" required>
+          <span class="help-block has-error" ng-if="signup.confirmation.$dirty">
+            <span ng-show="signup.password.$error.compareTo">Password must match.</span>
+            <span ng-show="signup.confirmation.$error.required">Confirmation password is required.</span>
+          </span>
         </div>
       </div>
 
       <br/>
 
-      <!-- <input type="submit" class="btn btn-lg btn-primary btn-block" value="Create Account"/> -->
-      <button class="btn btn-primary btn-lg btn-block" type="submit">
+      <!-- Disable signup button until the form has no errors -->
+      <button class="btn btn-primary btn-lg btn-block" type="submit" ng-disabled="signup.$invalid">
         <span ng-show="!signupForm.loading">Create Account</span>
         <span class="overlord-loading-spinner fa fa-spinner" ng-show="signupForm.loading" ></span>
         <span ng-show="signupForm.loading">Preparing your new account...</span>
@@ -139,6 +184,7 @@
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>
     <script src="/js/dependencies/angular.1.3.js"></script>
+    <script src="/js/dependencies/angular-messages.js"></script>
     <script src="/js/dependencies/angular-route.min.js"></script>
     <script src="/js/dependencies/lodash.min.js"></script>
     <script src="/js/activity-overlord/ActivityOverlord.module.js"></script>
