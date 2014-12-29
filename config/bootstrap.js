@@ -13,7 +13,8 @@ module.exports.bootstrap = function(cb) {
 
   // It's very important to trigger this callback method when you are finished
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
-  // 
+
+
   User.update({}, {
       numSocketsConnected: 0
     },
@@ -23,7 +24,27 @@ module.exports.bootstrap = function(cb) {
       } else {
         // console.log(users);
       }
-      cb();
+
+      User.findOne({
+        admin: true
+      }).exec(function(err, admin) {
+        if (err) return cb(err);
+        if (admin) {
+          return cb(null, admin);
+        }
+
+        User.create({
+          name: 'admin',
+          title: 'The Administrator',
+          email: 'a@a.com',
+          password: '123456',
+          admin: true
+        }).exec(function(err, adminUser) {
+          if (err) return cb(err);
+          console.log("admin user created");
+          cb();
+        });
+      });
     }
   )
 };
