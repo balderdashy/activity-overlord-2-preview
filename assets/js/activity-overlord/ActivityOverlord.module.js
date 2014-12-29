@@ -1,4 +1,4 @@
-angular.module('ActivityOverlord', ['ngRoute']);
+angular.module('ActivityOverlord', ['ngRoute', 'toastr']);
 
 
 // Set up all of our HTTP requests to use a special header

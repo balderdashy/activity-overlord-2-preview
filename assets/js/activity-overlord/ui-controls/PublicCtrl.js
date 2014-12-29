@@ -1,4 +1,4 @@
-angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', '$location', 'uiErrorBus', function($scope, $http, $location, uiErrorBus) {
+angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', '$location', 'uiErrorBus', 'toastr', function($scope, $http, $location, uiErrorBus, toastr) {
 
   /////////////////////////////////////////////////////////////////////////////////
   // When HTML is rendered...
@@ -65,12 +65,12 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
 
   $scope.submitSignupForm = function (){
 
-    // Check that passwords match
-    if ($scope.signupForm.password !== $scope.signupForm.confirmPassword) {
-      // TODO: improve and finish client-side validation, probably using ng-form.
-      $scope.signupForm.topLevelErrorMessage = 'Please make sure the passwords match.';
-      return;
-    }
+    // // Check that passwords match
+    // if ($scope.signupForm.password !== $scope.signupForm.confirmPassword) {
+    //   // TODO: improve and finish client-side validation, probably using ng-form.
+    //   $scope.signupForm.topLevelErrorMessage = 'Please make sure the passwords match.';
+    //   return;
+    // }
 
     // Set the loading state (i.e. show loading spinner)
     $scope.signupForm.loading = true;
@@ -96,13 +96,15 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
       // Handle known error type(s).
       var emailAddressAlreadyInUse = !sailsResponse.data && sailsResponse.data.error !== 'E_VALIDATION';
       if (emailAddressAlreadyInUse) {
-        $scope.signupForm.topLevelErrorMessage = 'Email address already in use.';
+        // $scope.signupForm.topLevelErrorMessage = 'Email address already in use.';
         return;
       }
 
       // Otherwise, display generic error if the error is unrecognized.
-      $scope.signupForm.topLevelErrorMessage = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
+      // $scope.signupForm.topLevelErrorMessage = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
 
+      toastr.error('That email address has already been taken, please try again.', 'Error');
+        console.log("made it here");
     })
     .finally(function eitherWay(){
       $scope.signupForm.loading = false;
