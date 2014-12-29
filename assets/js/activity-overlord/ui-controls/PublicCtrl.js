@@ -45,17 +45,21 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
     .catch(function onError(sailsResponse) {
 
       // Handle known error type(s).
+      // 
+      console.log(sailsResponse);
 
       // Invalid username / password combination.
-      if (sailsResponse.status === 404) {
+      if (sailsResponse.status === 400 || 404) {
         // $scope.loginForm.topLevelErrorMessage = 'Invalid email/password combination.';
         // 
-        toastr.error('Invalid email/password combination.', 'Error');
+        toastr.error('Invalid email/password combination.', 'Error', {
+          closeButton: true
+        });
         return;
       }
 
       // Otherwise, display generic error if the error is unrecognized.
-      $scope.loginForm.topLevelErrorMessage = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
+      // $scope.loginForm.topLevelErrorMessage = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
 
     })
     .finally(function eitherWay(){
