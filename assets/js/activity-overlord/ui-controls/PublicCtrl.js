@@ -48,7 +48,9 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
 
       // Invalid username / password combination.
       if (sailsResponse.status === 404) {
-        $scope.loginForm.topLevelErrorMessage = 'Invalid email/password combination.';
+        // $scope.loginForm.topLevelErrorMessage = 'Invalid email/password combination.';
+        // 
+        toastr.error('Invalid email/password combination.', 'Error');
         return;
       }
 
@@ -94,8 +96,10 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
     .catch(function onError(sailsResponse) {
 
       // Handle known error type(s).
-      var emailAddressAlreadyInUse = !sailsResponse.data && sailsResponse.data.error !== 'E_VALIDATION';
+      // var emailAddressAlreadyInUse = !sailsResponse.data && sailsResponse.data.error !== 'E_VALIDATION';
+      var emailAddressAlreadyInUse = sailsResponse.status == 409;
       if (emailAddressAlreadyInUse) {
+        toastr.error('That email address has already been taken, please try again.', 'Error');
         // $scope.signupForm.topLevelErrorMessage = 'Email address already in use.';
         return;
       }
@@ -103,8 +107,8 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
       // Otherwise, display generic error if the error is unrecognized.
       // $scope.signupForm.topLevelErrorMessage = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
 
-      toastr.error('That email address has already been taken, please try again.', 'Error');
-        console.log("made it here");
+      // toastr.error('That email address has already been taken, please try again.', 'Error');
+        // console.log("made it here");
     })
     .finally(function eitherWay(){
       $scope.signupForm.loading = false;
