@@ -19,6 +19,12 @@
   </head>
   <body ng-controller="DashboardCtrl" ng-cloak>
 
+    <audio id="chatAudio">
+      <source src="/sounds/notify.ogg" type="audio/ogg">
+      <source src="/sounds/notify.mp3" type="audio/mpeg">
+      <source src="/sounds/notify.wav" type="audio/wav">
+    </audio>
+
     <!-- Global errors (uiErrorBus) -->
     <div class="ui-error-bus">
       <li ng-repeat="error in errorBus"><span>{{error.message}}</span><span ng-click="errorBus.splice(indexOf(error), 1)" class="fa fa-remove"></span></li>
