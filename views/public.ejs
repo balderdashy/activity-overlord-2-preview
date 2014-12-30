@@ -31,7 +31,7 @@
       <!-- Creates the navbar -->
         <nav class="navbar navbar-default navbar-inverse">
           <!-- This creates the mechanism for collapse button -->
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
             <!-- This controls the number of lines in the image when the nav collapse -->
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -40,7 +40,7 @@
 
           <!-- This is the brand on the left-hand side. -->
           <a class="navbar-brand" href="/#"> activityOverlord</a>
-          <div class="collapse navbar-collapse">
+          <div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'">
           <form ng-submit="submitLoginForm()" class="navbar-form navbar-right">
 
               <!-- Error message -->
