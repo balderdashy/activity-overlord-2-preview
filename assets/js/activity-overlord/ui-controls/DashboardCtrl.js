@@ -1,4 +1,4 @@
-angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', 'toastr', function($scope, $http, toastr) {
+angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', 'toastr', '$interval', function($scope, $http, toastr, $interval) {
 SCOPE=$scope;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -31,18 +31,6 @@ SCOPE=$scope;
   $scope.me = window.SAILS_LOCALS.me;
 
 
-  // "Watch" the user model and "subscribe" to each user record.
-  io.socket.get('/users/watch', {
-    _csrf: window.SAILS_LOCALS._csrf
-  }, function (unused, jwr) {
-    if (jwr.error){
-      console.error('Error subscribing to user events:', jwr.error);
-      return;
-    }
-
-    // OK! Now we're subscribed to all of the user records in the database.
-  });
-
   // Let Sails know we've come online.
   io.socket.put('/me/online', {
     _csrf: window.SAILS_LOCALS._csrf
@@ -57,34 +45,77 @@ SCOPE=$scope;
 
 
 
+  /////////////////////////////////////////////////////////////////////////////////
+  // Set up a client-side timer
+  /////////////////////////////////////////////////////////////////////////////////
+
+  var REFRESH_ONLINE_STATUS_INTERVAL = 250;
+  $interval(function refreshOnlineStatus(){
+
+    // Loop through users on the page, decrement `msUntilInactive`, and then
+    // mark them accordingly (as isActive false or true)
+    _.each($scope.userList.contents, function (user){
+
+      // Decrement # of miliseconds until this user is flagged as inactive
+      user.msUntilInactive = user.msUntilInactive || 0;
+      user.msUntilInactive -= REFRESH_ONLINE_STATUS_INTERVAL;
+      if (user.msUntilInactive < 0) {
+        user.msUntilInactive = 0;
+      }
+
+      if (user.msUntilInactive > 0) {
+       // && (user.lastActive.getTime() > (browserNow.getTime() - (15*1000)))) {
+        user.isActive = true;
+        // console.log('Flagged user %d as active', user.id);
+      }
+      else {
+        user.isActive = false;
+        // console.log('Flagged user %d as NOT ACTIVE', user.id);
+      }
+    });
+
+  }, REFRESH_ONLINE_STATUS_INTERVAL);
+
 
   /////////////////////////////////////////////////////////////////////////////////
-  // Socket (server-sent) events:
+  // Listen for socket (server-sent) events:
   /////////////////////////////////////////////////////////////////////////////////
 
   // When a "user" event is emitted from the server
   // (i.e. a controller or blueprint action calls `User.publishUpdate()`,
   //  `User.publishCreate`, etc.)
   io.socket.on('user', function (event){
-console.log('EVENT:',event);
+    console.log('EVENT:',event);
     if (event.verb === 'updated') {
 
       // Look up the user in our list of users
       var foundUser = _.find($scope.userList.contents, {id: event.id});
       if (foundUser) {
+        // And update it with the new information from the server.
         _.extend(foundUser, event.data);
       }
 
       var message;
-      // If the event data contains `isOnline`,
-      // (i.e. the object passed to publishUpdate() on the backend contained `isOnline`)
-      // we're going to show a different toastr message.
-      if (!_.isUndefined(event.data.isOnline)) {
-        // Note that we have to use _.isUndefined() since `isOnline` could be present,
-        // but still falsy (e.g. false)
+      // If the event data contains `justBecameActive`,
+      // (i.e. the object passed to publishUpdate() on the backend contained `justBecameActive`)
+      // we're going to show a special toastr message and set `msUntilInactive` based on what
+      // was provided by the server
+      if (event.data.justBecameActive) {
+
+        foundUser.msUntilInactive = event.data.msUntilInactive;
 
         // Show our toastr message
-        toastr.info((event.data.name||'A user')+' has come '+(event.data.isOnline?'online':'offline')+'.');
+        toastr.info((event.data.name||'A user')+' just became active.');
+        // Play a sound
+        document.getElementById('chatAudio').play();
+      }
+      // If the event data contains `justLoggedOut`,
+      // (i.e. the object passed to publishUpdate() on the backend contained `justLoggedOut`)
+      // we're going to show a special toastr message.
+      else if (event.data.justLoggedOut){
+
+        // Show our toastr message
+        toastr.info((event.data.name||'A user')+' just logged out.');
         // Play a sound
         document.getElementById('chatAudio').play();
       }

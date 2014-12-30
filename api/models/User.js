@@ -37,14 +37,15 @@ module.exports = {
       type: 'string'
     },
 
-    // Number of sockets connected for this user
-    // (i.e. number of browser tab or mobile app open, logged in, and pointed at Activity Overlord)
-    numSocketsConnected: {
-      type: 'integer',
-      defaultsTo: 0
+    // The timestamp when the user was last "active"
+    // (i.e. they hit UserController.comeOnline())
+    // We use this to indicate whether they are "online" or not.
+    lastActive: {
+      type: 'date'
     },
 
     // The timestamp when the the user last logged in
+    // (i.e. sent a username and password to the server)
     lastLoggedIn: {
       type: 'date'
     },

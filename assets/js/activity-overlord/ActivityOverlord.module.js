@@ -45,18 +45,18 @@ var compareTo = function() {
             otherModelValue: "=compareTo"
         },
         link: function(scope, element, attributes, ngModel) {
-             
+
             ngModel.$validators.compareTo = function(modelValue) {
                 return modelValue == scope.otherModelValue;
             };
- 
+
             scope.$watch("otherModelValue", function() {
                 ngModel.$validate();
             });
         }
     };
 };
- 
+
 angular.module('ActivityOverlord').directive("compareTo", compareTo);
 
 // Listen for url fragment changes like "#/foo/bar-baz" so we can change the contents
@@ -98,18 +98,41 @@ angular.module('ActivityOverlord')
       }
 
       // Send request to Sails to fetch list of users.
+      // (Note that this endpoint also subscribes us to each of those user records,
+      //  and watches the User model)
       $scope.userList.loading = true;
       $scope.userList.errorMsg = '';
-      $http.get('/users')
-      .then(function onSuccess(sailsResponse) {
-        $scope.userList.contents = sailsResponse.data;
-      })
-      .catch(function onError(sailsResponse) {
-        // Display generic error, since there are no expected errors.
-        $scope.userList.errorMsg = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
-      })
-      .finally(function eitherWay(){
+      io.socket.get('/users', function (data, jwr) {
+        if (jwr.error) {
+          // Display generic error, since there are no expected errors.
+          $scope.userList.errorMsg = 'An unexpected error occurred: '+(data||jwr.status);
+
+          // Hide loading spinner
+          $scope.userList.loading = false;
+          return;
+        }
+        // Populate the userList with the newly fetched users.
+        $scope.userList.contents = data;
+
+        // Initially set `isActive` on the user referred to by `$scope.me`
+        // because if you're loading this page, your user must be active.
+        var currentUser = _.find($scope.userList.contents, {id: $scope.me.id});
+        currentUser.isActive = true;
+
+        // Also initially set `msUntilInactive` to whatever the server told us
+        // on any user marked as `isActive` by the server.
+        var activeUsers = _.each($scope.userList.contents, function (user){
+          if (user.msUntilInactive > 0){
+            user.isActive = true;
+          }
+        });
+
+        // Hide loading spinner
         $scope.userList.loading = false;
+
+        // Because `io.socket.on` isn't `io.socket.$on` or something
+        // we have to do this to render our changes into the DOM.
+        $scope.$apply();
       });
     }]
   })

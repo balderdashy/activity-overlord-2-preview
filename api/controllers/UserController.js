@@ -8,6 +8,50 @@
 module.exports = {
 
 
+  /**
+   * Normally if unspecified, pointing a route at this action will cause Sails
+   * to use its built-in blueprint action.  We're overriding that here.
+   */
+  find: function (req, res) {
+
+    // "Watch" the User model to hear about `publishCreate`'s.
+    User.watch(req);
+
+    // We only find the users here so we can subscribe to them.
+    User.find().exec(function (err, users) {
+      if (err) return res.negotiate(err);
+
+      // "Subscribe" the socket.io socket (i.e. browser tab)
+      // to each User record to hear about subsequent `publishUpdate`'s
+      // and `publishDestroy`'s.
+      _.each(users, function (user) {
+        User.subscribe(req, user.id);
+      });
+
+      // Before responding with the array of users, loop through and
+      // add a property called "isActive" if the user was active within the last
+      // 15 seconds.  Front-end code can use this as the initial state
+      // (i.e. so when you see the list of users, they are not all initially inactive).
+      _.each(users, function (user){
+
+        var serverNow = new Date();
+        if (user.lastActive.getTime() > (serverNow.getTime() - (15*1000))) {
+          user.msUntilInactive = (user.lastActive.getTime()+15*1000) - serverNow.getTime();
+          if (user.msUntilInactive < 0) {
+            user.msUntilInactive = 0;
+          }
+        }
+
+        // We also delete the `lastActive` property so as to avoid confusion.
+        // (i.e. we're using msUntilInactive because the server could be in Beijing,
+        //  but a user's browser might be in California)
+        delete user.lastActive;
+      });
+
+      return res.json(users);
+    });
+  },
+
 
 
   /**
@@ -17,30 +61,26 @@ module.exports = {
    */
   comeOnline: function (req, res) {
 
-    // Increment `numSocketsConnected`
+    // Look up the currently-logged-in user
     User.findOne(req.session.me).exec(function (err, user) {
       if (err) return res.negotiate(err);
       if (!user) {
         return res.negotiate(new Error('User associated with disconnecting socket no longer exists.'));
       }
 
-      // This user will momentarily be considered "online", since she
-      // will have exactly one socket connected (e.g. browser tab open)
-      var isFirstSocket = user.numSocketsConnected === 0;
-
+      // Update the `lastActive` timestamp for the user to be the server's local time.
       User.update(user.id, {
-        numSocketsConnected: user.numSocketsConnected+1
+        lastActive: new Date()
       }).exec(function (err){
         if (err) return res.negotiate(err);
 
-        if (isFirstSocket){
-          // Tell anyone who is allowed to hear about it
-          User.publishUpdate(req.session.me, {
-            numSocketsConnected: user.numSocketsConnected+1,
-            isOnline: true,
-            name: user.name
-          });
-        }
+
+        // Tell anyone who is allowed to hear about it
+        User.publishUpdate(req.session.me, {
+          justBecameActive: true,
+          msUntilInactive: 15*1000,
+          name: user.name
+        });
 
         return res.ok();
       });
@@ -48,32 +88,6 @@ module.exports = {
   },
 
 
-
-
-  /**
-   * This action is mainly here to demonstrate exactly what the
-   * pubsub/sockets part of the `find` blueprint does. We could have just
-   * used `io.socket.get('/users')` from the front-end, which would have
-   * achieved the same effect (since GET /users is hooked up to "UserController.find")
-   */
-  watchAndSubscribeToAll: function (req, res){
-
-    // "Watch" the User model to hear about `publishCreate`'s.
-    User.watch(req);
-
-    // We only find the users here so we can subscribe to them.
-    User.find().exec(function (err, users) {
-      if (err) return res.negotiate(err);
-
-      // "Subscribe" to each User record to hear about
-      // `publishUpdate`'s and `publishDestroy`'s
-      _.each(users, function (user) {
-        User.subscribe(req, user.id);
-      });
-
-      return res.ok();
-    });
-  },
 
 
 
@@ -277,16 +291,14 @@ module.exports = {
         return res.backToHomePage();
       }
 
-      // Before wiping the session, save the user id.
-      // This might be handy for analytics; but more presciently we need it
-      // to make sure the afterDisconnect socket lifecycle callback knows who's
-      // disconnecting (because the session might have gotten wiped before the
-      // server received the final disconnection message from Socket.io)
-      req.session.previousMe = req.session.me;
-
       // Wipe out the session (log out)
       req.session.me = null;
 
+      // Inform anyone who's allowed to hear about it that this user has logged out.
+      User.publishUpdate(user.id, {
+        justLoggedOut: true,
+        name: user.name
+      });
 
       // Either send a 200 OK or redirect to the home page
       return res.backToHomePage();
