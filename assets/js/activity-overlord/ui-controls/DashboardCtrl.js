@@ -1,4 +1,4 @@
-angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', 'uiErrorBus', 'toastr', function($scope, $http, uiErrorBus, toastr) {
+angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', 'toastr', function($scope, $http, toastr) {
 SCOPE=$scope;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ SCOPE=$scope;
     .then(function onSuccess(sailsResponse){
       // User deleted successfully from server- now we'll remove it
       // from `$scope.userList.contents` to clear it from the DOM.
-  
+
       // Send message to user that a user has been deleted.
       toastr.success(sailsResponse.data.name+ ' has been deleted.');
       document.getElementById('chatAudio').play();
@@ -235,7 +235,9 @@ SCOPE=$scope;
       });
     })
     .catch(function onError(sailsResponse){
-      uiErrorBus.handleError(sailsResponse.data||sailsResponse.status);
+      // the `''+` is just to cast the error to a string
+      var errMsg = ''+(sailsResponse.data||sailsResponse.status);
+      toastr.error(errMsg);
     })
     .finally(function eitherWay(){
       // Disable loading state (if still relevant)

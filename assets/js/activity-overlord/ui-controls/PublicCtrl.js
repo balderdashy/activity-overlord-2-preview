@@ -1,4 +1,4 @@
-angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', '$location', 'uiErrorBus', 'toastr', function($scope, $http, $location, uiErrorBus, toastr) {
+angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', '$location', 'toastr', function($scope, $http, $location, toastr) {
 
   /////////////////////////////////////////////////////////////////////////////////
   // When HTML is rendered...
@@ -45,13 +45,13 @@ angular.module('ActivityOverlord').controller('PublicCtrl', ['$scope', '$http', 
     .catch(function onError(sailsResponse) {
 
       // Handle known error type(s).
-      // 
+      //
       console.log(sailsResponse);
 
       // Invalid username / password combination.
       if (sailsResponse.status === 400 || 404) {
         // $scope.loginForm.topLevelErrorMessage = 'Invalid email/password combination.';
-        // 
+        //
         toastr.error('Invalid email/password combination.', 'Error', {
           closeButton: true
         });
