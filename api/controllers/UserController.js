@@ -24,17 +24,23 @@ module.exports = {
         return res.negotiate(new Error('User associated with disconnecting socket no longer exists.'));
       }
 
+      // This user will momentarily be considered "online", since she
+      // will have exactly one socket connected (e.g. browser tab open)
+      var isFirstSocket = user.numSocketsConnected === 0;
+
       User.update(user.id, {
         numSocketsConnected: user.numSocketsConnected+1
       }).exec(function (err){
         if (err) return res.negotiate(err);
 
-        // Tell anyone who is allowed to hear about it that this user
-        // has one more socket connected (e.g. browser tab open)
-        User.publishUpdate(req.session.me, {
-          numSocketsConnected: user.numSocketsConnected+1,
-          name: user.name
-        });
+        if (isFirstSocket){
+          // Tell anyone who is allowed to hear about it
+          User.publishUpdate(req.session.me, {
+            numSocketsConnected: user.numSocketsConnected+1,
+            isOnline: true,
+            name: user.name
+          });
+        }
 
         return res.ok();
       });
@@ -240,12 +246,6 @@ module.exports = {
           }, function(err) {
             if (err) return res.negotiate(err);
 
-            // Inform other sockets (e.g. connected sockets that are subscribed)
-            // that this user has logged in.
-            User.publishUpdate(user.id, {
-              lastLoggedIn: new Date()
-            });
-
             // Store user id in the user session
             req.session.me = user.id;
 
@@ -277,8 +277,16 @@ module.exports = {
         return res.backToHomePage();
       }
 
+      // Before wiping the session, save the user id.
+      // This might be handy for analytics; but more presciently we need it
+      // to make sure the afterDisconnect socket lifecycle callback knows who's
+      // disconnecting (because the session might have gotten wiped before the
+      // server received the final disconnection message from Socket.io)
+      req.session.previousMe = req.session.me;
+
       // Wipe out the session (log out)
       req.session.me = null;
+
 
       // Either send a 200 OK or redirect to the home page
       return res.backToHomePage();

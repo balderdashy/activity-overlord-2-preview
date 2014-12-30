@@ -76,15 +76,15 @@ console.log('EVENT:',event);
       }
 
       var message;
-      // If the event data contains `numSocketsConnected`,
-      // (i.e. the object passed to publishUpdate() on the backend contained `numSocketsConnected`)
+      // If the event data contains `isOnline`,
+      // (i.e. the object passed to publishUpdate() on the backend contained `isOnline`)
       // we're going to show a different toastr message.
-      if (!_.isUndefined(event.data.numSocketsConnected)) {
-        // Note that we have to use _.isUndefined() since `numSocketsConnected` could be present,
-        // but still falsy (e.g. 0)
+      if (!_.isUndefined(event.data.isOnline)) {
+        // Note that we have to use _.isUndefined() since `isOnline` could be present,
+        // but still falsy (e.g. false)
 
         // Show our toastr message
-        toastr.info((event.data.name||'A user')+' has come online.');
+        toastr.info((event.data.name||'A user')+' has come '+(event.data.isOnline?'online':'offline')+'.');
         // Play a sound
         document.getElementById('chatAudio').play();
       }
