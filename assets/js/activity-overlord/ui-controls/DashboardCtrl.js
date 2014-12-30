@@ -51,8 +51,7 @@ SCOPE=$scope;
       console.error('Error announcing new socket connection to Sails:',jwr);
       return;
     }
-    toastr.success('User has come online.');
-    document.getElementById('chatAudio').play();
+
     // OK! Now Sails knows we're online.
   });
 
@@ -67,16 +66,37 @@ SCOPE=$scope;
   // (i.e. a controller or blueprint action calls `User.publishUpdate()`,
   //  `User.publishCreate`, etc.)
   io.socket.on('user', function (event){
-
+console.log('EVENT:',event);
     if (event.verb === 'updated') {
+
+      // Look up the user in our list of users
       var foundUser = _.find($scope.userList.contents, {id: event.id});
       if (foundUser) {
         _.extend(foundUser, event.data);
       }
 
-      toastr.success(event.data.name+ ' has been updated.');
-      document.getElementById('chatAudio').play();
+      var message;
+      // If the event data contains `numSocketsConnected`,
+      // (i.e. the object passed to publishUpdate() on the backend contained `numSocketsConnected`)
+      // we're going to show a different toastr message.
+      if (!_.isUndefined(event.data.numSocketsConnected)) {
+        // Note that we have to use _.isUndefined() since `numSocketsConnected` could be present,
+        // but still falsy (e.g. 0)
 
+        // Show our toastr message
+        toastr.info((event.data.name||'A user')+' has come online.');
+        // Play a sound
+        document.getElementById('chatAudio').play();
+      }
+      else {
+        // Show our toastr message
+        toastr.success((event.data.name||'A user')+ ' has been updated.');
+        // Play a sound
+        document.getElementById('chatAudio').play();
+      }
+
+      // Finally, in either case...
+      //
       // Because `io.socket.on` isn't `io.socket.$on` or something
       // we have to do this to render our changes into the DOM.
       $scope.$apply();
@@ -86,7 +106,7 @@ SCOPE=$scope;
     if (event.verb === 'created') {
       $scope.userList.contents.push(event.data);
 
-      toastr.success(event.data.name+ ' has been created.');
+      toastr.success((event.data.name||'A user')+ ' has been created.');
 
       // Because `io.socket.on` isn't `io.socket.$on` or something
       // we have to do this to render our changes into the DOM.
@@ -247,3 +267,4 @@ SCOPE=$scope;
   };
 
 }]);
+

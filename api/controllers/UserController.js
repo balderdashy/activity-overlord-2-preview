@@ -32,7 +32,8 @@ module.exports = {
         // Tell anyone who is allowed to hear about it that this user
         // has one more socket connected (e.g. browser tab open)
         User.publishUpdate(req.session.me, {
-          numSocketsConnected: user.numSocketsConnected+1
+          numSocketsConnected: user.numSocketsConnected+1,
+          name: user.name
         });
 
         return res.ok();
