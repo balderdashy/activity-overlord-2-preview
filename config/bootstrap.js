@@ -33,17 +33,36 @@ module.exports.bootstrap = function(cb) {
           return cb(null, admin);
         }
 
-        User.create({
-          name: 'admin',
-          title: 'The Administrator',
-          email: 'a@a.com',
-          password: '123456',
-          admin: true
-        }).exec(function(err, adminUser) {
-          if (err) return cb(err);
-          console.log("admin user created");
-          cb();
+        // ****************************************
+
+        require('machinepack-passwords').encryptPassword({
+          password: '123456'
+        }).exec({
+          error: function (err) {
+            console.log(err);
+          },
+          success: function (encryptedPassword) {
+
+            // Create a User with the params sent from
+            // the sign-up form --> new.ejs
+            User.create({
+              name: 'John Galt',
+              title: 'Admin',
+              email: 'a@a.com',
+              admin: true,
+              encryptedPassword: encryptedPassword,
+              lastLoggedIn: new Date()
+            }, function userCreated(err, newUser) {
+              if (err) {
+                cb(err);
+              }
+              cb();
+            });
+          }
         });
+
+        // ****************************************
+        
       });
     }
   )
