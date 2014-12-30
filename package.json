@@ -24,7 +24,9 @@
     "grunt-contrib-coffee": "~0.10.1",
     "sails-hook-autoreload": "^0.11.2",
     "connect-redis": "1.4.5",
-    "machinepack-passwords": "^2.0.0"
+    "machinepack-passwords": "^2.0.0",
+    "sails-mongo": "^0.10.4",
+    "machinepack-gravatar": "^1.0.1"
   },
   "scripts": {
     "start": "node app.js",

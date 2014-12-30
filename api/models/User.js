@@ -53,6 +53,11 @@ module.exports = {
     admin: {
       type: 'boolean',
       defaultsTo: false
+    },
+
+    // url for gravatar
+    gravatarUrl: {
+      type: 'string'
     }
   }
 

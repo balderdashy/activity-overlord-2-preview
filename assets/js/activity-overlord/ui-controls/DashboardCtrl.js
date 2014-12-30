@@ -1,4 +1,4 @@
-angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', 'uiErrorBus', function($scope, $http, uiErrorBus) {
+angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', 'uiErrorBus', 'toastr', function($scope, $http, uiErrorBus, toastr) {
 SCOPE=$scope;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,8 @@ SCOPE=$scope;
       console.error('Error announcing new socket connection to Sails:',jwr);
       return;
     }
-
+    toastr.success('User has come online.');
+    document.getElementById('chatAudio').play();
     // OK! Now Sails knows we're online.
   });
 
@@ -66,13 +67,15 @@ SCOPE=$scope;
   // (i.e. a controller or blueprint action calls `User.publishUpdate()`,
   //  `User.publishCreate`, etc.)
   io.socket.on('user', function (event){
-    console.log(event);
 
     if (event.verb === 'updated') {
       var foundUser = _.find($scope.userList.contents, {id: event.id});
       if (foundUser) {
         _.extend(foundUser, event.data);
       }
+
+      toastr.success(event.data.name+ ' has been updated.');
+      document.getElementById('chatAudio').play();
 
       // Because `io.socket.on` isn't `io.socket.$on` or something
       // we have to do this to render our changes into the DOM.
@@ -82,6 +85,8 @@ SCOPE=$scope;
 
     if (event.verb === 'created') {
       $scope.userList.contents.push(event.data);
+
+      toastr.success(event.data.name+ ' has been created.');
 
       // Because `io.socket.on` isn't `io.socket.$on` or something
       // we have to do this to render our changes into the DOM.
@@ -220,6 +225,11 @@ SCOPE=$scope;
     .then(function onSuccess(sailsResponse){
       // User deleted successfully from server- now we'll remove it
       // from `$scope.userList.contents` to clear it from the DOM.
+  
+      // Send message to user that a user has been deleted.
+      toastr.success(sailsResponse.data.name+ ' has been deleted.');
+      document.getElementById('chatAudio').play();
+
       _.remove($scope.userList.contents, {
         id: otherUserId
       });

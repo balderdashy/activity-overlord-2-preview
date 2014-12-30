@@ -297,6 +297,13 @@ module.exports = {
         return res.negotiate(err);
       },
       success: function (encryptedPassword) {
+        require('machinepack-gravatar').getImageUrl({
+          emailAddress: req.param('email')
+        }).exec({
+          error: function(err){
+            return res.negotiate(err);
+          },
+          success: function(gravatar_url) {
 
         // Create a User with the params sent from
         // the sign-up form --> new.ejs
@@ -305,7 +312,8 @@ module.exports = {
           title: req.param('title'),
           email: req.param('email'),
           encryptedPassword: encryptedPassword,
-          lastLoggedIn: new Date()
+          lastLoggedIn: new Date(),
+          gravatarUrl: gravatar_url
         }, function userCreated(err, newUser) {
           if (err) {
 
@@ -337,6 +345,8 @@ module.exports = {
           });
 
         });
+      }
+    });
 
       }
     });
