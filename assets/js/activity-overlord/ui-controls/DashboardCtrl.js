@@ -147,7 +147,12 @@ console.log('EVENT:',event);
       admin: $scope.userProfile.properties.admin
     })
     .then(function onSuccess(sailsResponse){
-      // Everything is OK.
+      console.log(sailsResponse);
+
+      // Update `$scope.me` to reflect the changes to our profile.
+      // (e.g. in the top right corner)
+      $scope.me.name = sailsResponse.data.name;
+
     })
     .catch(function onError(sailsResponse){
 

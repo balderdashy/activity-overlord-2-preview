@@ -118,7 +118,12 @@ module.exports = {
           title: attributeValsToSet.title
         });
 
-        return res.ok();
+        // Respond with user's data so that UI can be updated.
+        return res.ok({
+          name: attributeValsToSet.name,
+          email: attributeValsToSet.email,
+          title: attributeValsToSet.title
+        });
       });
     });
   },
