@@ -35,7 +35,8 @@ module.exports = {
           name: user.name,
           email: user.email,
           title: user.title,
-          isAdmin: !!user.admin
+          isAdmin: !!user.admin,
+          gravatarUrl: user.gravatarUrl
         }
       });
 

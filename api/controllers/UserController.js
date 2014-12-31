@@ -17,7 +17,7 @@ module.exports = {
   destroy: function (req, res) {
 
     if (!req.param('id')){
-      return res.badRequest('id is required.');
+      return res.badRequest('id is a required parameter.');
     }
 
     User.destroy({
@@ -47,6 +47,57 @@ module.exports = {
 
 
 
+  /**
+   * Normally if unspecified, pointing a route at this action will cause Sails
+   * to use its built-in blueprint action.  We're overriding that here to strip some
+   * properties from the user before sending it down in the response.
+   */
+  findOne: function (req, res) {
+
+    if (!req.param('id')){
+      return res.badRequest('id is a required parameter.');
+    }
+
+    User.findOne(req.param('id')).exec(function (err, user) {
+      if (err) return res.negotiate(err);
+
+      // "Subscribe" the socket.io socket (i.e. browser tab)
+      // to each User record to hear about subsequent `publishUpdate`'s
+      // and `publishDestroy`'s.
+      if (req.isSocket) {
+        User.subscribe(req, user.id);
+      }
+
+
+      // Only send down white-listed attributes
+      // (e.g. strip out encryptedPassword)
+      return res.json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        title: user.title,
+        gravatarUrl: user.gravatarUrl,
+        admin: user.admin,
+        lastLoggedIn: user.lastLoggedIn,
+
+        // Add a property called "msUntilInactive" so the front-end code knows
+        // how long to display this particular user as active.
+        msUntilInactive: (function (){
+          var _msUntilLastActive;
+          var now = new Date();
+          _msUntilLastActive = (user.lastActive.getTime()+15*1000) - now.getTime();
+          if (_msUntilLastActive < 0) {
+            _msUntilLastActive = 0;
+          }
+          return _msUntilLastActive;
+        })()
+      }); //</res.json>
+
+    }); //</User.findOne()>
+  },
+
+
+
 
   /**
    * Normally if unspecified, pointing a route at this action will cause Sails
@@ -58,7 +109,6 @@ module.exports = {
     // "Watch" the User model to hear about `publishCreate`'s.
     User.watch(req);
 
-    // We only find the users here so we can subscribe to them.
     User.find().exec(function (err, users) {
       if (err) return res.negotiate(err);
 
@@ -224,6 +274,12 @@ module.exports = {
       }
       if (allParams.email) {
         setAttrVals.email = allParams.email;
+        // If email address changed, also update gravatar url
+        // execSync() is only available for synchronous machines.
+        // It will return the value sent out of the machine's defaultExit and throw otherwise.
+        setAttrVals.gravatarUrl = require('machinepack-gravatar').getImageUrl({
+          emailAddress: allParams.email
+        }).execSync();
       }
 
       // In this case, we use _.isUndefined (which is pretty much just `typeof X==='undefined'`)

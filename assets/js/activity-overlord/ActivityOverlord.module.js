@@ -201,6 +201,9 @@ angular.module('ActivityOverlord')
     templateUrl: 'templates/dashboard-my-profile.html',
     controller: ['$scope', '$location', '$http', function($scope, $location, $http) {
 
+      // We already have this data in $scope.me, so we don't need to show a loading state.
+      $scope.userProfile.loading = false;
+
       // Pass `$scope.me` in to `$scope.userProfile`
       angular.extend($scope.userProfile.properties, $scope.me);
 

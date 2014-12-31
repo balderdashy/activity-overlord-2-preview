@@ -13,12 +13,13 @@
   <span>Loading user data...</span>
 </div>
 
-<div class="col-md-3">
-  <img ng-src="{{userProfile.properties.imageSrc || 'images/default.jpg'}}"/>
+<div ng-hide="userProfile.loading">
+  <div class="col-md-3">
+    <img ng-src="{{userProfile.properties.gravatarUrl}}"/>
+  </div>
+  <div class="col-md-3">
+    <h1> {{userProfile.properties.name}}</h1>
+    <h3> {{userProfile.properties.title}} </h3>
+    <a href="mailto:{{userProfile.properties.email}}">{{userProfile.properties.email}}</a>
+  </div>
 </div>
-<div class="col-md-3">
-  <h1> {{userProfile.properties.name}}</h1>
-  <h3> {{userProfile.properties.title}} </h3>
-  <a href="mailto:{{userProfile.properties.email}}">{{userProfile.properties.email}}</a>
-</div>
-
