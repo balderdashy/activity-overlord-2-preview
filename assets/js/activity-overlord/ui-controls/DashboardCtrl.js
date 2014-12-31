@@ -103,12 +103,16 @@ SCOPE=$scope;
       // was provided by the server
       if (event.data.justBecameActive) {
 
+        // No matter what, show a quiet message indicating that another user is doing stuff.
+        // toastr.info((event.data.name||'A user')+' is hanging around.');
+
+        // If we've got the user on the page, we'll take it a step further.
         if (foundUser) {
           foundUser.msUntilInactive = event.data.msUntilInactive;
 
           // Only show our toastr message and play a sound if the user wasn't already active
           if (!foundUser.isActive) {
-            toastr.info((event.data.name||'A user')+' just became active.');
+            toastr.info((event.data.name||'A user')+' just became active.', undefined, {closeButton: true});
             document.getElementById('chatAudio').play();
           }
         }
