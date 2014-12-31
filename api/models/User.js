@@ -41,13 +41,17 @@ module.exports = {
     // (i.e. they hit UserController.comeOnline())
     // We use this to indicate whether they are "online" or not.
     lastActive: {
-      type: 'date'
+      type: 'date',
+      required: true,
+      defaultsTo: new Date(0)
     },
 
     // The timestamp when the the user last logged in
     // (i.e. sent a username and password to the server)
     lastLoggedIn: {
-      type: 'date'
+      type: 'date',
+      required: true,
+      defaultsTo: new Date(0)
     },
 
     // Whether or not the user has administrator privileges

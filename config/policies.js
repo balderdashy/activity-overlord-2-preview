@@ -27,6 +27,7 @@ module.exports.policies = {
     watchAndSubscribeToAll: ['isLoggedIn'],
 
     find: ['isAdmin'],
+    findOne: ['isAdmin'],
     update: ['isAdmin'],
     destroy: ['isAdmin']
   }

@@ -60,6 +60,7 @@ module.exports = {
 
     User.findOne(req.param('id')).exec(function (err, user) {
       if (err) return res.negotiate(err);
+      if (!user) return res.notFound();
 
       // "Subscribe" the socket.io socket (i.e. browser tab)
       // to each User record to hear about subsequent `publishUpdate`'s
