@@ -85,7 +85,6 @@ SCOPE=$scope;
   // (i.e. a controller or blueprint action calls `User.publishUpdate()`,
   //  `User.publishCreate`, etc.)
   io.socket.on('user', function (event){
-    console.log('EVENT:',event);
     if (event.verb === 'updated') {
 
       // Look up the user in our list of users
@@ -104,10 +103,11 @@ SCOPE=$scope;
 
         foundUser.msUntilInactive = event.data.msUntilInactive;
 
-        // Show our toastr message
-        toastr.info((event.data.name||'A user')+' just became active.');
-        // Play a sound
-        document.getElementById('chatAudio').play();
+        // Only show our toastr message and play a sound if the user wasn't already active
+        if (!foundUser.isActive) {
+          toastr.info((event.data.name||'A user')+' just became active.');
+          document.getElementById('chatAudio').play();
+        }
       }
       // If the event data contains `justLoggedOut`,
       // (i.e. the object passed to publishUpdate() on the backend contained `justLoggedOut`)
@@ -162,6 +162,22 @@ SCOPE=$scope;
   /////////////////////////////////////////////////////////////////////////////////
   // DOM events:
   /////////////////////////////////////////////////////////////////////////////////
+
+  // Bind onmousemove listener to window
+  $(window).mousemove(_.throttle(function whenMouseMoves (){
+
+    // Let Sails know we've come online.
+    io.socket.put('/me/online', {
+      _csrf: window.SAILS_LOCALS._csrf
+    }, function (unused,jwr){
+      if (jwr.error){
+        console.error('Error announcing new socket connection to Sails:',jwr);
+        return;
+      }
+
+      // OK! Now Sails knows we're online.
+    });
+  }, 3000));
 
 
   $scope.editMyProfile = function (){
