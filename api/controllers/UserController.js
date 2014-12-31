@@ -120,7 +120,9 @@ module.exports = {
         // "Subscribe" the socket.io socket (i.e. browser tab)
         // to each User record to hear about subsequent `publishUpdate`'s
         // and `publishDestroy`'s.
-        User.subscribe(req, user.id);
+        if (req.isSocket){
+          User.subscribe(req, user.id);
+        }
 
         // Only send down white-listed attributes
         // (e.g. strip out encryptedPassword from each user)
