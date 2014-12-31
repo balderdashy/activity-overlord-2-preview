@@ -37,7 +37,8 @@ module.exports.bootstrap = function(cb) {
           email: 'a@a.com',
           admin: true,
           encryptedPassword: encryptedPassword,
-          lastLoggedIn: new Date()
+          lastLoggedIn: new Date(),
+          lastActive: new Date()
         }, function userCreated(err, newUser) {
           if (err) {
             return cb(err);
