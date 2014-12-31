@@ -23,10 +23,10 @@
 module.exports.routes = {
 
   ////////////////////////////////////////////////////////////
-  // Dynamic HTML webpages
+  // Server-rendered HTML webpages
   ////////////////////////////////////////////////////////////
   'GET /': 'PageController.showHomePage',
-
+  'GET /signup': {view: 'signup'},
 
 
 

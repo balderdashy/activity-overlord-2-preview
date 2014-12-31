@@ -1,6 +1,6 @@
-angular.module('ActivityOverlord', ['ngRoute', 'toastr']);
+angular.module('ActivityOverlordDashboard', ['ngRoute', 'toastr']);
 
-angular.module('ActivityOverlord')
+angular.module('ActivityOverlordDashboard')
 .config(function(toastrConfig) {
   angular.extend(toastrConfig, {
     allowHtml: true,
@@ -27,7 +27,7 @@ angular.module('ActivityOverlord')
 // Set up all of our HTTP requests to use a special header
 // which contains the CSRF token.
 // More about CSRF here: http://sailsjs.org/#/documentation/concepts/Security/CSRF.html
-angular.module('ActivityOverlord')
+angular.module('ActivityOverlordDashboard')
 .config(['$httpProvider', function($httpProvider){
 
   // Set the X-CSRF-Token header on every http request.
@@ -35,41 +35,19 @@ angular.module('ActivityOverlord')
   $httpProvider.defaults.headers.common['X-CSRF-Token'] = window.SAILS_LOCALS._csrf;
 }]);
 
-// A directive to compare passwords in a form by K. Scott Allen
-// http://odetocode.com/blogs/scott/archive/2014/10/13/confirm-password-validation-in-angularjs.aspx
-
-var compareTo = function() {
-    return {
-        require: "ngModel",
-        scope: {
-            otherModelValue: "=compareTo"
-        },
-        link: function(scope, element, attributes, ngModel) {
-
-            ngModel.$validators.compareTo = function(modelValue) {
-                return modelValue == scope.otherModelValue;
-            };
-
-            scope.$watch("otherModelValue", function() {
-                ngModel.$validate();
-            });
-        }
-    };
-};
-
-angular.module('ActivityOverlord').directive("compareTo", compareTo);
 
 // Listen for url fragment changes like "#/foo/bar-baz" so we can change the contents
 // of the <ng-view> tag (if it exists)
-angular.module('ActivityOverlord')
+angular.module('ActivityOverlordDashboard')
 .config(['$routeProvider', function($routeProvider) {
 
   $routeProvider
 
   // #/    (i.e. ng-view's "home" state)
   .when('/', {
-    templateUrl: 'templates/dashboard-home.html',
+    template: '',
     // If the current user is an admin, "redirect" (client-side) to `#/users`.
+    // Otherwise redirect to `#/profile`
     controller: ['$scope', '$location', function($scope, $location) {
       if ($scope.me.isAdmin) {
 
@@ -82,13 +60,18 @@ angular.module('ActivityOverlord')
         $location.replace();
         return;
       }
+
+      // Client-side redirect to `#/profile`
+      $location.path('/profile');
+      $location.replace();
+      return;
     }]
   })
 
 
   // #/users
   .when('/users', {
-    templateUrl: 'templates/dashboard-users.html',
+    templateUrl: 'templates/dashboard/users.html',
     // Don't allow non-admins to access #/users.
     controller: ['$scope', '$location', '$http', function($scope, $location, $http) {
       if (!$scope.me.isAdmin) {
@@ -140,7 +123,7 @@ angular.module('ActivityOverlord')
 
   // #/users/:id
   .when('/users/:id', {
-    templateUrl: 'templates/dashboard-show-user.html',
+    templateUrl: 'templates/dashboard/show-user.html',
     controller: ['$scope', '$location', '$routeParams', '$http', function($scope, $location, $routeParams, $http) {
       // Don't allow non-admins to access #/users/:id.
       if (!$scope.me.isAdmin) {
@@ -169,7 +152,7 @@ angular.module('ActivityOverlord')
 
   // #/users/:id/edit
   .when('/users/:id/edit', {
-    templateUrl: 'templates/dashboard-edit-user.html',
+    templateUrl: 'templates/dashboard/edit-user.html',
     controller: ['$scope', '$location', '$routeParams', '$http', function($scope, $location, $routeParams, $http) {
       // Don't allow non-admins to access #/users/:id/edit.
       if (!$scope.me.isAdmin) {
@@ -198,7 +181,7 @@ angular.module('ActivityOverlord')
 
   // #/profile
   .when('/profile', {
-    templateUrl: 'templates/dashboard-my-profile.html',
+    templateUrl: 'templates/dashboard/my-profile.html',
     controller: ['$scope', '$location', '$http', function($scope, $location, $http) {
 
       // We already have this data in $scope.me, so we don't need to show a loading state.
@@ -223,7 +206,7 @@ angular.module('ActivityOverlord')
 
   // #/stuff
   .when('/stuff', {
-    templateUrl: 'templates/dashboard-example-page.html'
+    templateUrl: 'templates/dashboard/example-page.html'
   })
 
 

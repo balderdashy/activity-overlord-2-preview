@@ -1,5 +1,7 @@
-angular.module('ActivityOverlord').controller('DashboardCtrl', ['$scope', '$http', 'toastr', '$interval', function($scope, $http, toastr, $interval) {
-SCOPE=$scope;
+angular.module('ActivityOverlordDashboard').controller('DashboardCtrl', ['$scope', '$http', 'toastr', '$interval', function($scope, $http, toastr, $interval) {
+
+  // Just a hack so we can type `SCOPE` in the Chrome inspector.
+  SCOPE=$scope;
 
   /////////////////////////////////////////////////////////////////////////////////
   // When HTML is rendered... (i.e. when the page loads)
