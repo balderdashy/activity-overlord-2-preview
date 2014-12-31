@@ -22,7 +22,6 @@
     "grunt-contrib-cssmin": "~0.9.0",
     "grunt-contrib-less": "0.11.1",
     "grunt-contrib-coffee": "~0.10.1",
-    "sails-hook-autoreload": "^0.11.2",
     "connect-redis": "1.4.5",
     "machinepack-passwords": "^2.0.0",
     "sails-mongo": "^0.10.4",
@@ -41,6 +40,7 @@
   "author": "jgalt",
   "license": "",
   "devDependencies": {
-    "request": "^2.51.0"
+    "request": "^2.51.0",
+    "sails-hook-autoreload": "^0.11.2"
   }
 }
