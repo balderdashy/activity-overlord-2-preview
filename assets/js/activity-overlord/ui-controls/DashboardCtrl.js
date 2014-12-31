@@ -103,12 +103,14 @@ SCOPE=$scope;
       // was provided by the server
       if (event.data.justBecameActive) {
 
-        foundUser.msUntilInactive = event.data.msUntilInactive;
+        if (foundUser) {
+          foundUser.msUntilInactive = event.data.msUntilInactive;
 
-        // Only show our toastr message and play a sound if the user wasn't already active
-        if (!foundUser.isActive) {
-          toastr.info((event.data.name||'A user')+' just became active.');
-          document.getElementById('chatAudio').play();
+          // Only show our toastr message and play a sound if the user wasn't already active
+          if (!foundUser.isActive) {
+            toastr.info((event.data.name||'A user')+' just became active.');
+            document.getElementById('chatAudio').play();
+          }
         }
       }
       // If the event data contains `justLoggedOut`,
@@ -121,14 +123,27 @@ SCOPE=$scope;
         // Play a sound
         document.getElementById('chatAudio').play();
       }
+      // Otherwise this is just a normal update:
       else {
+
+        // If WE are the user undergoing the update, set $scope.me to reflect the changes.
+        if (event.id === $scope.me.id) {
+          _.extend($scope.me, event.data);
+        }
+
+        // If $scope.userProfile contains the user that was updated, we'll change it
+        // to reflect the new stuff from the server
+        if (event.id === $scope.userProfile.properties.id) {
+          _.extend($scope.userProfile.properties, event.data);
+        }
+
         // Show our toastr message
         toastr.success((event.data.name||'A user')+ ' has been updated.');
         // Play a sound
         document.getElementById('chatAudio').play();
       }
 
-      // Finally, in either case...
+      // Finally, in any case...
       //
       // Because `io.socket.on` isn't `io.socket.$on` or something
       // we have to do this to render our changes into the DOM.

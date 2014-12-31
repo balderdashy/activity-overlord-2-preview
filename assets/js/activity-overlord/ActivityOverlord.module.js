@@ -153,15 +153,15 @@ angular.module('ActivityOverlord')
       // Lookup user with the specified id from the server
       $scope.userProfile.loading = false;
       $scope.userProfile.errorMsg = '';
-      $http.get('/users/'+$routeParams.id)
-      .then(function onSuccess(res){
-        angular.extend($scope.userProfile.properties,res.data);
-      })
-      .catch(function onError(res){
-        $scope.userProfile.errorMsg = res.data||res.status;
-      })
-      .finally(function eitherWay(){
+      io.socket.get('/users/'+$routeParams.id, function onResponse(data, jwr){
+        if (jwr.error) {
+          $scope.userProfile.errorMsg = data||jwr.status;
+          $scope.userProfile.loading = false;
+          return;
+        }
+        angular.extend($scope.userProfile.properties, data);
         $scope.userProfile.loading = false;
+        $scope.$apply();
       });
 
     }]
@@ -203,6 +203,15 @@ angular.module('ActivityOverlord')
 
       // We already have this data in $scope.me, so we don't need to show a loading state.
       $scope.userProfile.loading = false;
+
+      // We only talk to the server here in order to subscribe to ourselves
+      io.socket.get('/users/'+$scope.me.id, function onResponse(data, jwr){
+        if (jwr.error){
+          console.error('Unexpected error from Sails:', jwr.error);
+          return;
+        }
+        // angular.extend($scope.userProfile.properties, res.data);
+      });
 
       // Pass `$scope.me` in to `$scope.userProfile`
       angular.extend($scope.userProfile.properties, $scope.me);

@@ -214,6 +214,12 @@ module.exports = {
       }
       if (allParams.email) {
         setAttrVals.email = allParams.email;
+        // If email address changed, also update gravatar url
+        // execSync() is only available for synchronous machines.
+        // It will return the value sent out of the machine's defaultExit and throw otherwise.
+        setAttrVals.gravatarUrl = require('machinepack-gravatar').getImageUrl({
+          emailAddress: allParams.email
+        }).execSync();
       }
 
       // Encrypt password if necessary
@@ -240,14 +246,16 @@ module.exports = {
         User.publishUpdate(req.session.me, {
           name: attributeValsToSet.name,
           email: attributeValsToSet.email,
-          title: attributeValsToSet.title
+          title: attributeValsToSet.title,
+          gravatarUrl: attributeValsToSet.gravatarUrl
         });
 
         // Respond with user's data so that UI can be updated.
         return res.ok({
           name: attributeValsToSet.name,
           email: attributeValsToSet.email,
-          title: attributeValsToSet.title
+          title: attributeValsToSet.title,
+          gravatarUrl: attributeValsToSet.gravatarUrl
         });
       });
     });
@@ -315,7 +323,8 @@ module.exports = {
           name: attributeValsToSet.name,
           email: attributeValsToSet.email,
           title: attributeValsToSet.title,
-          admin: attributeValsToSet.admin
+          admin: attributeValsToSet.admin,
+          gravatarUrl: attributeValsToSet.gravatarUrl
         });
 
         return res.ok();
