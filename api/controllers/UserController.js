@@ -158,6 +158,7 @@ module.exports = {
 
 
 
+
   /**
    * This action is the first endpoint hit by logged-in sockets after they connect.
    * This is implemented by our web front-end in:
@@ -275,8 +276,8 @@ module.exports = {
     }
 
     (function _prepareAttributeValuesToSet(allParams, cb){
-      var setAttrVals = {};
 
+      var setAttrVals = {};
       if (allParams.name) {
         setAttrVals.name = allParams.name;
       }
@@ -312,7 +313,7 @@ module.exports = {
           return cb(null, setAttrVals);
         }
       });
-    })(req.allParams(), function (err, attributeValsToSet){
+    })(req.allParams(), function afterwards (err, attributeValsToSet){
       if (err) return res.negotiate(err);
 
       User.update(req.param('id'), attributeValsToSet).exec(function (err){
