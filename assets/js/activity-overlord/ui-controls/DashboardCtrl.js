@@ -85,6 +85,8 @@ SCOPE=$scope;
   // (i.e. a controller or blueprint action calls `User.publishUpdate()`,
   //  `User.publishCreate`, etc.)
   io.socket.on('user', function (event){
+    console.log(event);
+
     if (event.verb === 'updated') {
 
       // Look up the user in our list of users
@@ -146,7 +148,12 @@ SCOPE=$scope;
     }
 
     if (event.verb === 'destroyed') {
+      // Remove destroyed user from the DOM
       _.remove($scope.userList.contents, {id: event.id});
+
+      // Send message to user that a user has been deleted.
+      toastr.success((event.previous.name||'A user')+ ' has been deleted.');
+      document.getElementById('chatAudio').play();
 
       // Because `io.socket.on` isn't `io.socket.$on` or something
       // we have to do this to render our changes into the DOM.
@@ -295,13 +302,9 @@ SCOPE=$scope;
     // Send request to Sails to delete the specified user.
     $http.delete('/users/'+otherUserId)
     .then(function onSuccess(sailsResponse){
+
       // User deleted successfully from server- now we'll remove it
       // from `$scope.userList.contents` to clear it from the DOM.
-
-      // Send message to user that a user has been deleted.
-      toastr.success(sailsResponse.data.name+ ' has been deleted.');
-      document.getElementById('chatAudio').play();
-
       _.remove($scope.userList.contents, {
         id: otherUserId
       });

@@ -8,9 +8,50 @@
 module.exports = {
 
 
+
   /**
    * Normally if unspecified, pointing a route at this action will cause Sails
-   * to use its built-in blueprint action.  We're overriding that here.
+   * to use its built-in blueprint action.  We're overriding that here to pass
+   * down additional information.
+   */
+  destroy: function (req, res) {
+
+    if (!req.param('id')){
+      return res.badRequest('id is required.');
+    }
+
+    User.destroy({
+      id: req.param('id')
+    }).exec(function (err, usersDestroyed){
+      if (err) return res.negotiate(err);
+      if (usersDestroyed.length === 0) {
+        return res.notFound();
+      }
+
+      // Let everyone who's subscribed know that this user is deleted.
+      User.publishDestroy(req.param('id'), undefined, {
+        previous: {
+          name: usersDestroyed[0].name
+        }
+      });
+
+      // Unsubscribe all the sockets (e.g. browser tabs) who are currently
+      // subscribed to this particular user.
+      _.each(User.subscribers(usersDestroyed[0]), function(socket) {
+        User.unsubscribe(socket, usersDestroyed[0]);
+      });
+
+      return res.ok();
+    });
+  },
+
+
+
+
+  /**
+   * Normally if unspecified, pointing a route at this action will cause Sails
+   * to use its built-in blueprint action.  We're overriding that here to strip some
+   * properties from the objects in the array of users (e.g. the encryptedPassword)
    */
   find: function (req, res) {
 
@@ -21,36 +62,46 @@ module.exports = {
     User.find().exec(function (err, users) {
       if (err) return res.negotiate(err);
 
-      // "Subscribe" the socket.io socket (i.e. browser tab)
-      // to each User record to hear about subsequent `publishUpdate`'s
-      // and `publishDestroy`'s.
-      _.each(users, function (user) {
-        User.subscribe(req, user.id);
-      });
+      var prunedUsers = [];
 
-      // Before responding with the array of users, loop through and
-      // add a property called "isActive" if the user was active within the last
-      // 15 seconds.  Front-end code can use this as the initial state
-      // (i.e. so when you see the list of users, they are not all initially inactive).
+      // Loop through each user...
       _.each(users, function (user){
 
-        var serverNow = new Date();
-        if (user.lastActive.getTime() > (serverNow.getTime() - (15*1000))) {
-          user.msUntilInactive = (user.lastActive.getTime()+15*1000) - serverNow.getTime();
-          if (user.msUntilInactive < 0) {
-            user.msUntilInactive = 0;
-          }
-        }
+        // "Subscribe" the socket.io socket (i.e. browser tab)
+        // to each User record to hear about subsequent `publishUpdate`'s
+        // and `publishDestroy`'s.
+        User.subscribe(req, user.id);
 
-        // We also delete the `lastActive` property so as to avoid confusion.
-        // (i.e. we're using msUntilInactive because the server could be in Beijing,
-        //  but a user's browser might be in California)
-        delete user.lastActive;
+        // Only send down white-listed attributes
+        // (e.g. strip out encryptedPassword from each user)
+        prunedUsers.push({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          title: user.title,
+          gravatarUrl: user.gravatarUrl,
+          admin: user.admin,
+          lastLoggedIn: user.lastLoggedIn,
+
+          // Add a property called "msUntilInactive" so the front-end code knows
+          // how long to display this particular user as active.
+          msUntilInactive: (function (){
+            var _msUntilLastActive;
+            var now = new Date();
+            _msUntilLastActive = (user.lastActive.getTime()+15*1000) - now.getTime();
+            if (_msUntilLastActive < 0) {
+              _msUntilLastActive = 0;
+            }
+            return _msUntilLastActive;
+          })()
+        });
       });
 
-      return res.json(users);
+      // Finally, send array of users in the response
+      return res.json(prunedUsers);
     });
   },
+
 
 
 
@@ -65,8 +116,11 @@ module.exports = {
     User.findOne(req.session.me).exec(function (err, user) {
       if (err) return res.negotiate(err);
       if (!user) {
-        return res.negotiate(new Error('User associated with disconnecting socket no longer exists.'));
+        return res.notFound('User associated with socket "coming online" no longer exists.');
       }
+
+      // 15s timeout until inactive
+      var INACTIVITY_TIMEOUT = 15*1000;
 
       // Update the `lastActive` timestamp for the user to be the server's local time.
       User.update(user.id, {
@@ -74,11 +128,10 @@ module.exports = {
       }).exec(function (err){
         if (err) return res.negotiate(err);
 
-
         // Tell anyone who is allowed to hear about it
         User.publishUpdate(req.session.me, {
           justBecameActive: true,
-          msUntilInactive: 15*1000,
+          msUntilInactive: INACTIVITY_TIMEOUT,
           name: user.name
         });
 
@@ -287,7 +340,7 @@ module.exports = {
 
       // If session refers to a user who no longer exists, still allow logout.
       if (!user) {
-        sails.log.warn('Session refers to a user who no longer exists.');
+        sails.log.verbose('Session refers to a user who no longer exists.');
         return res.backToHomePage();
       }
 
@@ -319,61 +372,59 @@ module.exports = {
     require('machinepack-passwords').encryptPassword({
       password: req.param('password')
     }).exec({
-      error: function (err) {
+      error: function(err) {
         return res.negotiate(err);
       },
-      success: function (encryptedPassword) {
+      success: function(encryptedPassword) {
         require('machinepack-gravatar').getImageUrl({
           emailAddress: req.param('email')
         }).exec({
-          error: function(err){
+          error: function(err) {
             return res.negotiate(err);
           },
-          success: function(gravatar_url) {
+          success: function(gravatarUrl) {
 
-        // Create a User with the params sent from
-        // the sign-up form --> new.ejs
-        User.create({
-          name: req.param('name'),
-          title: req.param('title'),
-          email: req.param('email'),
-          encryptedPassword: encryptedPassword,
-          lastLoggedIn: new Date(),
-          gravatarUrl: gravatar_url
-        }, function userCreated(err, newUser) {
-          if (err) {
+            // Create a User with the params sent from
+            // the sign-up form --> new.ejs
+            User.create({
+              name: req.param('name'),
+              title: req.param('title'),
+              email: req.param('email'),
+              encryptedPassword: encryptedPassword,
+              lastLoggedIn: new Date(),
+              gravatarUrl: gravatarUrl
+            }, function userCreated(err, newUser) {
+              if (err) {
 
-            // If this is a uniqueness error about the email attribute,
-            // send back an easily parseable status code.
-            if (err.invalidAttributes && err.invalidAttributes.email && err.invalidAttributes.email[0] && err.invalidAttributes.email[0].rule === 'unique'){
-              return res.emailAddressInUse();
-            }
+                // If this is a uniqueness error about the email attribute,
+                // send back an easily parseable status code.
+                if (err.invalidAttributes && err.invalidAttributes.email && err.invalidAttributes.email[0] && err.invalidAttributes.email[0].rule === 'unique') {
+                  return res.emailAddressInUse();
+                }
 
-            // Otherwise, send back something reasonable as our error response.
-            return res.negotiate(err);
+                // Otherwise, send back something reasonable as our error response.
+                return res.negotiate(err);
+              }
+
+              // Log user in
+              req.session.me = newUser.id;
+
+              // Let other subscribed sockets know that the user was created.
+              User.publishCreate({
+                id: newUser.id,
+                name: newUser.name,
+                title: newUser.title,
+                email: newUser.email,
+                lastLoggedIn: newUser.lastLoggedIn
+              });
+
+              // Send back the id of the new user
+              return res.json({
+                id: newUser.id
+              });
+            });
           }
-
-          // Log user in
-          req.session.me = newUser.id;
-
-          // Let other subscribed sockets know that the user was created.
-          User.publishCreate({
-            id: newUser.id,
-            name: newUser.name,
-            title: newUser.title,
-            email: newUser.email,
-            lastLoggedIn: newUser.lastLoggedIn
-          });
-
-          // Send back the id of the new user
-          return res.json({
-            id: newUser.id
-          });
-
         });
-      }
-    });
-
       }
     });
   }

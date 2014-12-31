@@ -25,7 +25,8 @@ module.exports = {
       }
 
       if (!user) {
-        return res.serverError('Session refers to a user who no longer exists.');
+        sails.log.verbose('Session refers to a user who no longer exists- did you delete a user, then try to refresh the page with an open tab logged-in as that user?');
+        return res.view('public');
       }
 
       return res.view('dashboard', {
