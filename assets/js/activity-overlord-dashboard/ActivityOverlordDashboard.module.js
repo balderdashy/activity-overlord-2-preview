@@ -35,6 +35,22 @@ angular.module('ActivityOverlordDashboard')
   $httpProvider.defaults.headers.common['X-CSRF-Token'] = window.SAILS_LOCALS._csrf;
 }]);
 
+/**
+ * Time ago filter.
+ *
+ */
+angular.module('ActivityOverlordDashboard')
+
+.filter('timeAgo', function() {
+
+  var timeAgoFilter = function (date) {
+    return moment(date).fromNow();
+  };
+
+  return timeAgoFilter;
+
+})
+
 
 // Listen for url fragment changes like "#/foo/bar-baz" so we can change the contents
 // of the <ng-view> tag (if it exists)
