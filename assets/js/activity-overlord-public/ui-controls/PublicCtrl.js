@@ -99,6 +99,8 @@ angular.module('ActivityOverlordPublic').controller('PublicCtrl', ['$scope', '$h
     })
     .catch(function onError(sailsResponse) {
 
+      console.log(sailsResponse);
+
       // Handle known error type(s).
       // var emailAddressAlreadyInUse = !sailsResponse.data && sailsResponse.data.error !== 'E_VALIDATION';
       var emailAddressAlreadyInUse = sailsResponse.status == 409;
@@ -106,6 +108,10 @@ angular.module('ActivityOverlordPublic').controller('PublicCtrl', ['$scope', '$h
         toastr.error('That email address has already been taken, please try again.', 'Error');
         // $scope.signupForm.topLevelErrorMessage = 'Email address already in use.';
         return;
+      }
+
+      if (sailsResponse.data.raw.code === 11000) {
+        toastr.error('That email address has already been taken, please try again.', 'Error');
       }
 
       // Otherwise, display generic error if the error is unrecognized.
