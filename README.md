@@ -6,3 +6,7 @@ a preview of [Activity Overlord 2.0](https://github.com/irlnathan/activityoverlo
 ### How do I log in as an admin?
 
 To log in as the built-in default admin user, use `a@a.com`/`123456`
+
+### License
+MIT
+&copy; 2015 Mike McNeil and Irl Nathan
