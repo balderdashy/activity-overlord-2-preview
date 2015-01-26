@@ -38,7 +38,7 @@
     "url": "git://github.com/jgalt/angularactivity.git"
   },
   "author": "jgalt",
-  "license": "",
+  "license": "MIT",
   "devDependencies": {
     "request": "^2.51.0",
     "sails-hook-autoreload": "^0.11.2"
