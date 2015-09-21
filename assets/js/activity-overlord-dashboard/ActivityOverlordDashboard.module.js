@@ -1,7 +1,7 @@
 angular.module('ActivityOverlordDashboard', ['ngRoute', 'toastr']);
 
 angular.module('ActivityOverlordDashboard')
-.config(function(toastrConfig) {
+.config(['toastrConfig',function(toastrConfig) {
   angular.extend(toastrConfig, {
     allowHtml: true,
     closeButton: false,
@@ -21,7 +21,7 @@ angular.module('ActivityOverlordDashboard')
     titleClass: 'toast-title',
     toastClass: 'toast'
   });
-});
+}]);
 
 
 // Set up all of our HTTP requests to use a special header

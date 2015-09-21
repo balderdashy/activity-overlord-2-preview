@@ -13,7 +13,7 @@ angular.module('ActivityOverlordPublic', ['ngRoute', 'toastr', 'compareTo']);
 
 
 angular.module('ActivityOverlordPublic')
-.config(function (toastrConfig) {
+.config(['toastrConfig', function (toastrConfig) {
   angular.extend(toastrConfig, {
     allowHtml: true,
     closeButton: false,
@@ -33,7 +33,7 @@ angular.module('ActivityOverlordPublic')
     titleClass: 'toast-title',
     toastClass: 'toast'
   });
-});
+}]);
 
 
 // Set up all of our HTTP requests to use a special header
